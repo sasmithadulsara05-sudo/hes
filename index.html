@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Aviator - Single File</title>
-  
+
   <!-- Added Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -37,6 +37,20 @@ body {
     position: relative;
 }
 
+.backend-connecting {
+    position: absolute;
+    inset: 0;
+    z-index: 80;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    color: #ccc;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
 /* Header */
 .header {
     display: flex;
@@ -47,45 +61,94 @@ body {
     border-bottom: 1px solid #333;
     z-index: 50;
 }
+
 .logo {
     color: #e50b2e;
     font-size: 20px;
     font-weight: 900;
     font-style: italic;
 }
+
 .balance-area {
     display: flex;
     align-items: center;
     gap: 15px;
 }
+
 .balance {
     color: #28a745;
     font-weight: bold;
     font-size: 16px;
 }
+
 .menu-icon {
     font-size: 26px; 
     cursor: pointer;
     color: #ccc;
 }
 
-/* History Bar */
+/* History Wrapper & Bar */
+.history-wrapper {
+    position: relative;
+    display: flex;
+    background-color: #0d0d0d;
+    border-bottom: 1px solid #333;
+    z-index: 51;
+}
+
 .history-bar {
     display: flex;
     gap: 10px;
     padding: 5px 15px;
-    background-color: #0d0d0d;
     overflow-x: auto;
     white-space: nowrap;
     font-size: 12px;
-    border-bottom: 1px solid #333;
     scroll-behavior: smooth; 
-    z-index: 50;
+    flex: 1;
 }
-.history-bar span { padding: 2px 8px; border-radius: 10px; background: #222; font-weight: bold; }
+
+.history-bar span, .history-dropdown span { 
+    padding: 2px 8px; 
+    border-radius: 10px; 
+    background: #222; 
+    font-weight: bold; 
+    display: inline-block;
+}
+
 .hist-low { color: #8e90c6; }
 .hist-mid { color: #9c27b0; }
 .hist-high { color: #e50b2e; }
+
+.history-expand-btn {
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111;
+    color: #ccc;
+    cursor: pointer;
+    border-left: 1px solid #333;
+    font-weight: bold;
+    letter-spacing: 2px;
+    font-size: 18px;
+}
+
+.history-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: rgba(13,13,13,0.98);
+    padding: 10px 15px;
+    display: none;
+    gap: 10px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #333;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+    max-height: 140px; /* roughly 4 lines */
+    overflow-y: auto;
+    z-index: 50;
+}
 
 /* Main Game Screen */
 .game-screen {
@@ -126,7 +189,10 @@ body {
     animation: rotate 60s linear infinite;
     z-index: 1;
 }
-@keyframes rotate { 100% { transform: rotate(360deg); } }
+
+@keyframes rotate { 
+    100% { transform: rotate(360deg); } 
+}
 
 .multiplier-text {
     font-size: 70px;
@@ -158,7 +224,10 @@ body {
 
 #waiting-screen {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
     background: rgba(0,0,0,0.8);
     z-index: 30;
     display: none; 
@@ -167,34 +236,110 @@ body {
     align-items: center;
     gap: 15px;
 }
-.partners-logo { display: flex; align-items: center; font-style: italic; }
-.partners-logo .ufc { color: #e50b2e; font-size: 30px; font-weight: 900; }
-.partners-logo .line { color: white; margin: 0 10px; font-size: 24px; }
-.partners-logo .avi { color: #e50b2e; font-size: 20px; font-weight: bold; }
-.partners-text { color: white; font-weight: bold; font-size: 14px; letter-spacing: 1px; }
 
-.loading-bar-container { width: 200px; height: 6px; background: #333; border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
-.loading-bar { width: 0%; height: 100%; background: #e50b2e; }
+.partners-logo { 
+    display: flex; 
+    align-items: center; 
+    font-style: italic; 
+}
+
+.partners-logo .ufc { 
+    color: #e50b2e; 
+    font-size: 30px; 
+    font-weight: 900; 
+}
+
+.partners-logo .line { 
+    color: white; 
+    margin: 0 10px; 
+    font-size: 24px; 
+}
+
+.partners-logo .avi { 
+    color: #e50b2e; 
+    font-size: 20px; 
+    font-weight: bold; 
+}
+
+.partners-text { 
+    color: white; 
+    font-weight: bold; 
+    font-size: 14px; 
+    letter-spacing: 1px; 
+}
+
+.loading-bar-container { 
+    width: 200px; 
+    height: 6px; 
+    background: #333; 
+    border-radius: 3px; 
+    overflow: hidden; 
+    margin-bottom: 10px; 
+}
+
+.loading-bar { 
+    width: 0%; 
+    height: 100%; 
+    background: #e50b2e; 
+}
 
 .spribe-badge {
-    background: #1e3a1e; border: 1px solid #28a745; border-radius: 8px;
-    padding: 10px 20px; text-align: center;
+    background: #1e3a1e; 
+    border: 1px solid #28a745; 
+    border-radius: 8px;
+    padding: 10px 20px; 
+    text-align: center;
 }
+
 .spribe-logo {
-    color: white; font-weight: bold; font-size: 18px; letter-spacing: 2px;
-    margin-bottom: 5px; display: flex; align-items: center; justify-content: center; gap: 8px;
+    color: white; 
+    font-weight: bold; 
+    font-size: 18px; 
+    letter-spacing: 2px;
+    margin-bottom: 5px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 8px;
 }
+
 .cert {
-    background: transparent; border: 1px solid #28a745; color: #28a745; 
-    padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; margin-bottom: 5px;
-    display: inline-flex; align-items: center; gap: 5px;
+    background: transparent; 
+    border: 1px solid #28a745; 
+    color: #28a745; 
+    padding: 2px 10px; 
+    border-radius: 12px; 
+    font-size: 12px; 
+    font-weight: bold; 
+    margin-bottom: 5px;
+    display: inline-flex; 
+    align-items: center; 
+    gap: 5px;
 }
-.cert i { background: #28a745; color: white; border-radius: 50%; width: 14px; height: 14px; font-style: normal; font-size: 10px; display: inline-flex; justify-content: center; align-items: center;}
-.since { color: white; font-size: 10px; opacity: 0.8; }
+
+.cert i { 
+    background: #28a745; 
+    color: white; 
+    border-radius: 50%; 
+    width: 14px; 
+    height: 14px; 
+    font-style: normal; 
+    font-size: 10px; 
+    display: inline-flex; 
+    justify-content: center; 
+    align-items: center;
+}
+
+.since { 
+    color: white; 
+    font-size: 10px; 
+    opacity: 0.8; 
+}
 
 #user-counter {
     position: absolute;
-    bottom: 10px; right: 10px;
+    bottom: 10px; 
+    right: 10px;
     background: transparent;
     font-size: 14px;
     font-weight: bold;
@@ -204,14 +349,35 @@ body {
     align-items: center;
     gap: 8px;
 }
-.user-avatars { display: flex; align-items: center; }
-.avatar-circle {
-    width: 20px; height: 20px; border-radius: 50%; border: 1px solid #222;
-    margin-left: -8px; background-size: cover; background-position: center;
+
+.user-avatars { 
+    display: flex; 
+    align-items: center; 
 }
-.avatar-circle:nth-child(1) { background-image: radial-gradient(circle at center, #f5d0b5, #d2a679); margin-left: 0; z-index: 3;}
-.avatar-circle:nth-child(2) { background-image: radial-gradient(circle at center, #c2e59c, #64b3f4); z-index: 2;}
-.avatar-circle:nth-child(3) { background-image: radial-gradient(circle at center, #ff9966, #ff5e62); z-index: 1;}
+
+.avatar-circle {
+    width: 20px; 
+    height: 20px; 
+    border-radius: 50%; 
+    border: 1px solid #222;
+    margin-left: -8px; 
+    background-size: cover; 
+    background-position: center;
+}
+
+.avatar-circle:nth-child(1) { 
+    background-image: radial-gradient(circle at center, #f5d0b5, #d2a679); 
+    margin-left: 0; 
+    z-index: 3;
+}
+.avatar-circle:nth-child(2) { 
+    background-image: radial-gradient(circle at center, #c2e59c, #64b3f4); 
+    z-index: 2;
+}
+.avatar-circle:nth-child(3) { 
+    background-image: radial-gradient(circle at center, #ff9966, #ff5e62); 
+    z-index: 1;
+}
 
 /* Controls Section */
 .controls-container {
@@ -246,6 +412,7 @@ body {
     padding: 2px;
     margin-bottom: 5px;
 }
+
 .bet-tabs span {
     flex: 1;
     text-align: center;
@@ -254,7 +421,11 @@ body {
     border-radius: 15px;
     color: #888;
 }
-.bet-tabs span.active { background: #333; color: white; }
+
+.bet-tabs span.active { 
+    background: #333; 
+    color: white; 
+}
 
 .amount-control {
     display: flex;
@@ -263,6 +434,7 @@ body {
     border-radius: 20px;
     padding: 5px;
 }
+
 .amount-control button {
     background: #333;
     color: white;
@@ -273,6 +445,7 @@ body {
     font-size: 16px;
     cursor: pointer;
 }
+
 .amount-control input {
     flex: 1;
     background: transparent;
@@ -290,6 +463,7 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 5px;
 }
+
 .preset-buttons button {
     background: #111;
     color: #888;
@@ -299,296 +473,969 @@ body {
     font-size: 12px;
     cursor: pointer;
 }
-.preset-buttons button:active { background: #333; }
 
-.bet-action { flex: 1; display: flex; }
-.btn-bet {
-    width: 100%; background-color: #28a745; border: none; border-radius: 10px;
-    color: white; font-weight: bold; font-size: 18px; cursor: pointer;
-    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2); display: flex; flex-direction: column;
-    justify-content: center; align-items: center; transition: 0.2s;
+.preset-buttons button:active { 
+    background: #333; 
 }
-.btn-bet:active { transform: scale(0.98); }
-.btn-bet .amt { font-weight: normal; font-size: 14px; }
-.btn-cashout { background-color: #ff9800; }
-.btn-waiting { background-color: #e50b2e; }
+
+.bet-action { 
+    flex: 1; 
+    display: flex; 
+}
+
+.btn-bet {
+    width: 100%; 
+    background-color: #28a745; 
+    border: none; 
+    border-radius: 10px;
+    color: white; 
+    font-weight: bold; 
+    font-size: 18px; 
+    cursor: pointer;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2); 
+    display: flex; 
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    transition: 0.2s;
+}
+
+.btn-bet:active { 
+    transform: scale(0.98); 
+}
+
+.btn-bet .amt { 
+    font-weight: normal; 
+    font-size: 14px; 
+}
+
+.btn-cashout { 
+    background-color: #ff9800; 
+}
+.btn-waiting { 
+    background-color: #e50b2e; 
+}
 
 /* Side Menu */
 #menu-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5); z-index: 90; display: none;
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0,0,0,0.5); 
+    z-index: 90; 
+    display: none;
 }
+
 #side-menu {
-    position: absolute; top: 0; right: 0; width: 80%; max-width: 300px; height: 100%;
-    background-color: #1a1a1a; z-index: 100; transform: translateX(100%);
-    transition: transform 0.3s ease; display: flex; flex-direction: column;
+    position: absolute; 
+    top: 0; 
+    right: 0; 
+    width: 80%; 
+    max-width: 300px; 
+    height: 100%;
+    background-color: #1a1a1a; 
+    z-index: 100; 
+    transform: translateX(100%);
+    transition: transform 0.3s ease; 
+    display: flex; 
+    flex-direction: column;
     border-left: 1px solid #333;
 }
-#side-menu.open { transform: translateX(0); }
+
+#side-menu.open { 
+    transform: translateX(0); 
+}
 
 .menu-profile {
-    display: flex; align-items: center; padding: 20px 15px; border-bottom: 1px solid #333;
-    background-color: #222; gap: 15px;
+    display: flex; 
+    align-items: center; 
+    padding: 20px 15px; 
+    border-bottom: 1px solid #333;
+    background-color: #222; 
+    gap: 15px;
 }
+
 .pro-avatar {
-    width: 45px; height: 45px; border-radius: 50%;
+    width: 45px; 
+    height: 45px; 
+    border-radius: 50%;
     background-image: radial-gradient(circle at center, #8e90c6, #3b3c68);
     border: 2px solid #555;
 }
-.pro-details { flex: 1; }
-.pro-name { font-weight: bold; font-size: 16px; color: white; }
-.change-avatar {
-    display: flex; flex-direction: column; align-items: center;
-    font-size: 10px; color: #888; text-align: center; cursor: pointer;
-}
-.change-avatar svg { width: 20px; height: 20px; fill: #888; margin-bottom: 2px; }
 
-.menu-list { list-style: none; flex: 1; padding: 10px 0; overflow-y: auto; }
-.menu-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 15px 20px; color: #ccc; font-size: 14px; font-weight: 500;
-    cursor: pointer; transition: background 0.2s;
+.pro-details { 
+    flex: 1; 
 }
-.menu-item:hover { background-color: #2a2a2a; }
-.menu-item svg { width: 18px; height: 18px; fill: #888; margin-right: 15px; vertical-align: middle; }
+
+.pro-name { 
+    font-weight: bold; 
+    font-size: 16px; 
+    color: white; 
+}
+
+.change-avatar {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    font-size: 10px; 
+    color: #888; 
+    text-align: center; 
+    cursor: pointer;
+}
+
+.change-avatar svg { 
+    width: 20px; 
+    height: 20px; 
+    fill: #888; 
+    margin-bottom: 2px; 
+}
+
+.menu-list { 
+    list-style: none; 
+    flex: 1; 
+    padding: 10px 0; 
+    overflow-y: auto; 
+}
+
+.menu-item {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 15px 20px; 
+    color: #ccc; 
+    font-size: 14px; 
+    font-weight: 500;
+    cursor: pointer; 
+    transition: background 0.2s;
+}
+
+.menu-item:hover { 
+    background-color: #2a2a2a; 
+}
+
+.menu-item svg { 
+    width: 18px; 
+    height: 18px; 
+    fill: #888; 
+    margin-right: 15px; 
+    vertical-align: middle; 
+}
 
 /* Toggle Switch CSS */
-.switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-.switch input { opacity: 0; width: 0; height: 0; }
+.switch { 
+    position: relative; 
+    display: inline-block; 
+    width: 40px; 
+    height: 20px; 
+}
+
+.switch input { 
+    opacity: 0; 
+    width: 0; 
+    height: 0; 
+}
+
 .slider {
-    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #555; transition: .4s; border-radius: 20px;
+    position: absolute; 
+    cursor: pointer; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0;
+    background-color: #555; 
+    transition: .4s; 
+    border-radius: 20px;
 }
+
 .slider:before {
-    position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px;
-    background-color: white; transition: .4s; border-radius: 50%;
+    position: absolute; 
+    content: ""; 
+    height: 16px; 
+    width: 16px; 
+    left: 2px; 
+    bottom: 2px;
+    background-color: white; 
+    transition: .4s; 
+    border-radius: 50%;
 }
-input:checked + .slider { background-color: #28a745; }
-input:checked + .slider:before { transform: translateX(20px); }
+
+input:checked + .slider { 
+    background-color: #28a745; 
+}
+
+input:checked + .slider:before { 
+    transform: translateX(20px); 
+}
 
 .menu-home {
-    padding: 15px; text-align: center; border-top: 1px solid #333;
-    color: #888; font-weight: bold; cursor: pointer; background: #111;
+    padding: 15px; 
+    text-align: center; 
+    border-top: 1px solid #333;
+    color: #888; 
+    font-weight: bold; 
+    cursor: pointer; 
+    background: #111;
 }
-.menu-home:active { background: #222; }
-.menu-home svg { width: 16px; height: 16px; fill: #888; vertical-align: middle; margin-right: 5px;}
+
+.menu-home:active { 
+    background: #222; 
+}
+
+.menu-home svg { 
+    width: 16px; 
+    height: 16px; 
+    fill: #888; 
+    vertical-align: middle; 
+    margin-right: 5px;
+}
 
 /* Deposit Modal Styles */
 .deposit-modal {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: #1a1a1a; z-index: 200; overflow-y: auto; padding: 20px;
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background-color: #1a1a1a; 
+    z-index: 200; 
+    overflow-y: auto; 
+    padding: 20px;
     color: white;
 }
-.deposit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.deposit-header h2 { margin: 0; font-size: 18px; }
-.close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
 
-.crypto-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
-.crypto-btn {
-    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    background: #242424; border: 2px solid #333; border-radius: 10px; padding: 15px 5px;
-    cursor: pointer; color: #ccc; font-weight: bold; transition: 0.3s; font-size: 14px;
+.deposit-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px; 
 }
-.crypto-btn img { width: 40px; height: 40px; margin-bottom: 10px; }
-.crypto-btn.active { border-color: #28a745; background: #1e3a1e; color: white; }
 
-.deposit-content { background: #242424; padding: 20px; border-radius: 10px; text-align: center; }
-.qr-code { width: 150px; height: 150px; border-radius: 10px; margin-bottom: 15px; border: 2px solid #333; }
+.deposit-header h2 { 
+    margin: 0; 
+    font-size: 18px; 
+}
+
+.close-btn { 
+    background: none; 
+    border: none; 
+    color: white; 
+    font-size: 24px; 
+    cursor: pointer; 
+}
+
+.crypto-buttons { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 20px; 
+}
+
+.crypto-btn {
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    background: #242424; 
+    border: 2px solid #333; 
+    border-radius: 10px; 
+    padding: 15px 5px;
+    cursor: pointer; 
+    color: #ccc; 
+    font-weight: bold; 
+    transition: 0.3s; 
+    font-size: 14px;
+}
+
+.crypto-btn img { 
+    width: 40px; 
+    height: 40px; 
+    margin-bottom: 10px; 
+}
+
+.crypto-btn.active { 
+    border-color: #28a745; 
+    background: #1e3a1e; 
+    color: white; 
+}
+
+.deposit-content { 
+    background: #242424; 
+    padding: 20px; 
+    border-radius: 10px; 
+    text-align: center; 
+}
+
+.qr-code { 
+    width: 150px; 
+    height: 150px; 
+    border-radius: 10px; 
+    margin-bottom: 15px; 
+    border: 2px solid #333; 
+}
 
 .wallet-address-box {
-    display: flex; align-items: center; justify-content: space-between;
-    background: #111; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333;
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    background: #111; 
+    padding: 10px; 
+    border-radius: 8px; 
+    margin-bottom: 20px; 
+    border: 1px solid #333;
 }
-.wallet-address-box span { font-size: 12px; color: #28a745; word-break: break-all; flex: 1; text-align: left; font-family: monospace; }
-.copy-icon { background: none; border: none; cursor: pointer; padding: 5px; margin-left: 10px; }
-.copy-icon svg { width: 20px; height: 20px; fill: #888; }
-.copy-icon:active svg { fill: white; }
 
-.input-group { text-align: left; margin-bottom: 15px; }
-.input-group label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; }
-.input-group input[type="number"], .input-group input[type="file"] {
-    width: 100%; padding: 10px; background: #111; border: 1px solid #333;
-    border-radius: 8px; color: white; font-size: 14px; outline: none;
+.wallet-address-box span { 
+    font-size: 12px; 
+    color: #28a745; 
+    word-break: break-all; 
+    flex: 1; 
+    text-align: left; 
+    font-family: monospace; 
 }
-.input-group input[type="number"]:focus { border-color: #28a745; }
 
-.min-deposit { color: #e50b2e; font-size: 14px; font-weight: bold; margin-bottom: 20px; text-align: center; }
+.copy-icon { 
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    padding: 5px; 
+    margin-left: 10px; 
+}
+
+.copy-icon svg { 
+    width: 20px; 
+    height: 20px; 
+    fill: #888; 
+}
+
+.copy-icon:active svg { 
+    fill: white; 
+}
+
+.input-group { 
+    text-align: left; 
+    margin-bottom: 15px; 
+}
+
+.input-group label { 
+    display: block; 
+    font-size: 12px; 
+    color: #888; 
+    margin-bottom: 5px; 
+}
+
+.input-group input[type="number"], 
+.input-group input[type="file"] {
+    width: 100%; 
+    padding: 10px; 
+    background: #111; 
+    border: 1px solid #333;
+    border-radius: 8px; 
+    color: white; 
+    font-size: 14px; 
+    outline: none;
+}
+
+.input-group input[type="number"]:focus { 
+    border-color: #28a745; 
+}
+
+.min-deposit { 
+    color: #e50b2e; 
+    font-size: 14px; 
+    font-weight: bold; 
+    margin-bottom: 20px; 
+    text-align: center; 
+}
+
 .confirm-btn {
-    width: 100%; background-color: #28a745; color: white; border: none; border-radius: 8px;
-    padding: 15px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s;
+    width: 100%; 
+    background-color: #28a745; 
+    color: white; 
+    border: none; 
+    border-radius: 8px;
+    padding: 15px; 
+    font-weight: bold; 
+    font-size: 16px; 
+    cursor: pointer; 
+    transition: 0.2s;
 }
-.confirm-btn:active { transform: scale(0.98); }
 
-/* --- UPDATED: Customer Support Styles to Match Image exactly --- */
+.confirm-btn:active { 
+    transform: scale(0.98); 
+}
+
+/* --- CUSTOMER SUPPORT CSS - FULL RESPONSIVE FLEXBOX --- */
 .support-modal {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: #f5f6f8; z-index: 200; display: flex; flex-direction: column; color: #333;
-    overflow: hidden; box-sizing: border-box;
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    width: 100%; 
+    height: 100%; 
+    height: 100dvh; 
+    background-color: #f5f6f8; 
+    z-index: 200; 
+    display: flex; 
+    flex-direction: column; 
+    color: #333;
+    overflow: hidden; 
+    box-sizing: border-box;
 }
-.support-header { 
-    display: flex; justify-content: space-between; align-items: center; 
-    padding: 15px; background: white; border-bottom: 1px solid #eaeaea;
-    flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-.support-header h2 { margin: 0; font-size: 16px; color: #5a738e; font-weight: 600; text-align: center; flex: 1; }
-.support-icon-btn { background: none; border: none; font-size: 20px; color: #5a738e; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 30px;}
-.support-body { 
-    flex: 1; padding: 20px 15px; overflow-y: auto; display: flex; flex-direction: column; background-color: #f5f6f8;
-}
-.date-badge { align-self: center; background: #e4e6eb; color: #5a738e; padding: 5px 15px; border-radius: 15px; font-size: 12px; margin-bottom: 20px; flex-shrink: 0; }
 
-.user-message {
-    background: #4b7bb5; color: white; border-radius: 15px 15px 0 15px; padding: 12px 15px;
-    max-width: 80%; align-self: flex-end; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    font-size: 14px; word-wrap: break-word; flex-shrink: 0;
+.support-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 15px; 
+    background: white; 
+    border-bottom: 1px solid #eaeaea;
+    flex-shrink: 0; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.user-message.img-msg { padding: 5px; background: transparent; box-shadow: none; }
-.user-message img { max-width: 200px; border-radius: 10px; border: 2px solid #4b7bb5; }
-.msg-time { display: block; text-align: right; font-size: 10px; color: #e1edf9; margin-top: 5px; }
-.img-msg .msg-time { color: #888; }
+
+.support-header h2 { 
+    margin: 0; 
+    font-size: 16px; 
+    color: #5a738e; 
+    font-weight: 600; 
+    text-align: center; 
+    flex: 1; 
+}
+
+.support-icon-btn { 
+    background: none; 
+    border: none; 
+    font-size: 20px; 
+    color: #5a738e; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    width: 30px;
+}
+
+.support-body { 
+    flex: 1 1 auto; 
+    padding: 20px 15px 80px 15px; 
+    overflow-y: auto; 
+    display: flex; 
+    flex-direction: column; 
+    background-color: #f5f6f8; 
+    box-sizing: border-box;
+}
 
 .support-footer { 
-    display: flex; align-items: center; padding: 12px 15px; background: white; gap: 12px; 
-    border-top: 1px solid #eaeaea; flex-shrink: 0;
+    position: absolute; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%; 
+    box-sizing: border-box;
+    display: flex; 
+    align-items: center; 
+    padding: 12px 15px; 
+    background: white; 
+    gap: 12px; 
+    border-top: 1px solid #eaeaea;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
 }
+
 .support-input { 
-    flex: 1; background: white; border: 1px solid #ddd; border-radius: 20px; 
-    padding: 12px 18px; outline: none; font-size: 14px; color: #333;
+    flex: 1; 
+    background: white; 
+    border: 1px solid #ddd; 
+    border-radius: 20px; 
+    padding: 12px 18px; 
+    outline: none; 
+    font-size: 14px; 
+    color: #333;
 }
-.support-input:focus { border-color: #4b7bb5; }
-.support-input::placeholder { color: #888; }
+
+.support-input:focus { 
+    border-color: #4b7bb5; 
+}
+
+.support-input::placeholder { 
+    color: #888; 
+}
+
 .send-btn { 
-    background: #4b7bb5; color: white; border: none; width: 42px; height: 42px; 
-    border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;
+    background: #4b7bb5; 
+    color: white; 
+    border: none; 
+    width: 42px; 
+    height: 42px; 
+    border-radius: 50%; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    cursor: pointer; 
+    transition: 0.2s; 
+    flex-shrink: 0;
 }
-.send-btn:active { transform: scale(0.95); }
-.send-btn svg { fill: white; width: 20px; height: 20px; margin-left: 2px;}
+
+.send-btn:active { 
+    transform: scale(0.95); 
+}
+
+.send-btn svg { 
+    fill: white; 
+    width: 20px; 
+    height: 20px; 
+    margin-left: 2px;
+}
+
+.date-badge { 
+    align-self: center; 
+    background: #e4e6eb; 
+    color: #5a738e; 
+    padding: 5px 15px; 
+    border-radius: 15px; 
+    font-size: 12px; 
+    margin-bottom: 20px; 
+    flex-shrink: 0; 
+}
+
+.user-message {
+    background: #4b7bb5; 
+    color: white; 
+    border-radius: 15px 15px 0 15px; 
+    padding: 12px 15px;
+    max-width: 80%; 
+    align-self: flex-end; 
+    margin-bottom: 15px; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    font-size: 14px; 
+    word-wrap: break-word; 
+    flex-shrink: 0;
+}
+
+.user-message.img-msg { 
+    padding: 5px; 
+    background: transparent; 
+    box-shadow: none; 
+}
+
+.user-message img { 
+    max-width: 200px; 
+    border-radius: 10px; 
+    border: 2px solid #4b7bb5; 
+}
+
+.msg-time { 
+    display: block; 
+    text-align: right; 
+    font-size: 10px; 
+    color: #e1edf9; 
+    margin-top: 5px; 
+}
+
+.img-msg .msg-time { 
+    color: #888; 
+}
 
 /* Personal Profile Styles */
 .profile-modal {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: #1a1a1a; z-index: 200; overflow-y: auto; padding: 20px; color: white;
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background-color: #1a1a1a; 
+    z-index: 200; 
+    overflow-y: auto; 
+    padding: 20px; 
+    color: white;
 }
-.profile-form { background: #242424; padding: 20px; border-radius: 10px; }
-.profile-form .input-group { margin-bottom: 20px; }
-.profile-form .input-group label { display: block; font-size: 13px; color: #ccc; margin-bottom: 8px; }
+
+.profile-form { 
+    background: #242424; 
+    padding: 20px; 
+    border-radius: 10px; 
+}
+
+.profile-form .input-group { 
+    margin-bottom: 20px; 
+}
+
+.profile-form .input-group label { 
+    display: block; 
+    font-size: 13px; 
+    color: #ccc; 
+    margin-bottom: 8px; 
+}
+
 .profile-form .input-group input {
-    width: 100%; box-sizing: border-box; padding: 12px; background: #111; 
-    border: 1px solid #444; border-radius: 8px; color: white; font-size: 15px; outline: none;
+    width: 100%; 
+    box-sizing: border-box; 
+    padding: 12px; 
+    background: #111; 
+    border: 1px solid #444; 
+    border-radius: 8px; 
+    color: white; 
+    font-size: 15px; 
+    outline: none;
 }
-.profile-form .input-group input:focus { border-color: #4078c0; }
+
+.profile-form .input-group input:focus { 
+    border-color: #4078c0; 
+}
+
 .profile-form .input-group input:disabled {
-    opacity: 0.6; cursor: not-allowed; background: #1a1a1a; color: #888;
+    opacity: 0.6; 
+    cursor: not-allowed; 
+    background: #1a1a1a; 
+    color: #888;
 }
 
 /* Custom Calendar */
 .custom-calendar {
-    background: #0d0d0d; border: 1px solid #4078c0; border-radius: 10px; padding: 15px;
-    margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    background: #0d0d0d; 
+    border: 1px solid #4078c0; 
+    border-radius: 10px; 
+    padding: 15px;
+    margin-top: 10px; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
-.cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-.cal-header-controls { display: flex; gap: 5px; }
+
+.cal-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 15px; 
+}
+
+.cal-header-controls { 
+    display: flex; 
+    gap: 5px; 
+}
+
 .cal-select {
-    background: #111; color: white; border: 1px solid #4078c0; padding: 5px; 
-    border-radius: 5px; font-size: 13px; outline: none; cursor: pointer;
+    background: #111; 
+    color: white; 
+    border: 1px solid #4078c0; 
+    padding: 5px; 
+    border-radius: 5px; 
+    font-size: 13px; 
+    outline: none; 
+    cursor: pointer;
 }
-.cal-nav-btn { background: #1a1a1a; color: white; border: 1px solid #333; border-radius: 5px; padding: 5px 10px; cursor: pointer; }
-.cal-nav-btn:hover { background: #4078c0; border-color: #4078c0; }
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-.cal-day-header { font-size: 12px; color: #888; font-weight: bold; margin-bottom: 5px;}
-.cal-day { padding: 8px 0; cursor: pointer; border-radius: 5px; font-size: 14px; color: #ccc; background: #1a1a1a; transition: 0.2s;}
-.cal-day:hover { background: #333; color: #4078c0; }
-.cal-day.empty { cursor: default; background: transparent; }
-.cal-day.selected { background: #4078c0; color: white; font-weight: bold; }
+
+.cal-nav-btn { 
+    background: #1a1a1a; 
+    color: white; 
+    border: 1px solid #333; 
+    border-radius: 5px; 
+    padding: 5px 10px; 
+    cursor: pointer; 
+}
+
+.cal-nav-btn:hover { 
+    background: #4078c0; 
+    border-color: #4078c0; 
+}
+
+.cal-grid { 
+    display: grid; 
+    grid-template-columns: repeat(7, 1fr); 
+    gap: 5px; 
+    text-align: center; 
+}
+
+.cal-day-header { 
+    font-size: 12px; 
+    color: #888; 
+    font-weight: bold; 
+    margin-bottom: 5px;
+}
+
+.cal-day { 
+    padding: 8px 0; 
+    cursor: pointer; 
+    border-radius: 5px; 
+    font-size: 14px; 
+    color: #ccc; 
+    background: #1a1a1a; 
+    transition: 0.2s;
+}
+
+.cal-day:hover { 
+    background: #333; 
+    color: #4078c0; 
+}
+
+.cal-day.empty { 
+    cursor: default; 
+    background: transparent; 
+}
+
+.cal-day.selected { 
+    background: #4078c0; 
+    color: white; 
+    font-weight: bold; 
+}
 
 .input-group input[type="text"], 
 .input-group input[type="number"], 
 .input-group input[type="file"],
 .input-group input[type="date"] {
-    width: 100%; box-sizing: border-box; padding: 12px; background: #111; 
-    border: 1px solid #444; border-radius: 8px; color: white; font-size: 15px; outline: none;
+    width: 100%; 
+    box-sizing: border-box; 
+    padding: 12px; 
+    background: #111; 
+    border: 1px solid #444; 
+    border-radius: 8px; 
+    color: white; 
+    font-size: 15px; 
+    outline: none;
 }
+
 .input-group input[type="text"]:focus, 
 .input-group input[type="number"]:focus,
-.input-group input[type="date"]:focus { border-color: #4078c0; }
+.input-group input[type="date"]:focus { 
+    border-color: #4078c0; 
+}
 
 /* Live Bets */
 .live-bets-container {
-    background-color: #1a1a1a; margin-top: 10px; padding: 10px 15px;
-    border-top: 1px solid #333; flex: 1; overflow-y: auto; max-height: 350px;
+    background-color: #1a1a1a; 
+    margin-top: 10px; 
+    padding: 10px 15px;
+    border-top: 1px solid #333; 
+    flex: 1; 
+    overflow-y: auto; 
+    max-height: 350px;
 }
+
 .live-bets-top {
-    display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    border-bottom: 1px solid #333; 
+    padding-bottom: 10px; 
+    margin-bottom: 10px;
 }
-.live-bets-count { color: white; font-size: 14px; font-weight: bold; }
-.live-bets-header { display: flex; justify-content: space-between; font-size: 11px; color: #888; margin-bottom: 5px; }
+
+.live-bets-count { 
+    color: white; 
+    font-size: 14px; 
+    font-weight: bold; 
+}
+
+.live-bets-header { 
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 11px; 
+    color: #888; 
+    margin-bottom: 5px; 
+}
+
 .col-user { width: 35%; }
 .col-bet { width: 20%; text-align: right; }
 .col-mult { width: 20%; text-align: right; }
 .col-win { width: 25%; text-align: right; }
 
 .live-bet-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 5px; border-radius: 5px; margin-bottom: 3px; font-size: 12px;
-    background-color: #141414; border: 1px solid #222; transition: all 0.2s ease-in;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 8px 5px; 
+    border-radius: 5px; 
+    margin-bottom: 3px; 
+    font-size: 12px;
+    background-color: #141414; 
+    border: 1px solid #222; 
+    transition: all 0.2s ease-in;
 }
-.live-bet-row.cashed-out { background-color: #1e3a1e; border-color: #28a745; }
-.live-bet-user { display: flex; align-items: center; gap: 8px; width: 35%; color: #ccc; }
-.live-bet-avatar { width: 20px; height: 20px; border-radius: 50%; background: #444; background-size: cover;}
-.live-bet-bet { width: 20%; text-align: right; color: white; }
-.live-bet-mult { width: 20%; text-align: right; font-weight: bold; }
-.live-bet-win { width: 25%; text-align: right; color: white; font-weight: bold; }
+
+.live-bet-row.cashed-out { 
+    background-color: #1e3a1e; 
+    border-color: #28a745; 
+}
+
+.live-bet-user { 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    width: 35%; 
+    color: #ccc; 
+}
+
+.live-bet-avatar { 
+    width: 20px; 
+    height: 20px; 
+    border-radius: 50%; 
+    background: #444; 
+    background-size: cover;
+}
+
+.live-bet-bet { 
+    width: 20%; 
+    text-align: right; 
+    color: white; 
+}
+
+.live-bet-mult { 
+    width: 20%; 
+    text-align: right; 
+    font-weight: bold; 
+}
+
+.live-bet-win { 
+    width: 25%; 
+    text-align: right; 
+    color: white; 
+    font-weight: bold; 
+}
 
 /* Auth */
 .auth-bg {
     background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
-    display: flex; justify-content: center; align-items: center; padding: 20px;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    padding: 20px;
 }
+
 .auth-box {
-    background-color: #141414; border: 1px solid #333; border-radius: 15px;
-    padding: 30px 20px; width: 100%; max-width: 320px; text-align: center;
+    background-color: #141414; 
+    border: 1px solid #333; 
+    border-radius: 15px;
+    padding: 30px 20px; 
+    width: 100%; 
+    max-width: 320px; 
+    text-align: center;
     box-shadow: 0 10px 30px rgba(0,0,0,0.8);
 }
-.auth-logo { color: #e50b2e; font-size: 28px; font-weight: 900; font-style: italic; margin-bottom: 20px; }
-.auth-title { color: white; font-size: 18px; margin-bottom: 20px; font-weight: bold; }
-.auth-input-group { margin-bottom: 15px; text-align: left; }
-.auth-input-group label { display: block; color: #888; font-size: 12px; margin-bottom: 5px; }
+
+.auth-logo { 
+    color: #e50b2e; 
+    font-size: 28px; 
+    font-weight: 900; 
+    font-style: italic; 
+    margin-bottom: 20px; 
+}
+
+.auth-title { 
+    color: white; 
+    font-size: 18px; 
+    margin-bottom: 20px; 
+    font-weight: bold; 
+}
+
+.auth-input-group { 
+    margin-bottom: 15px; 
+    text-align: left; 
+}
+
+.auth-input-group label { 
+    display: block; 
+    color: #888; 
+    font-size: 12px; 
+    margin-bottom: 5px; 
+}
+
 .auth-input {
-    width: 100%; box-sizing: border-box; padding: 12px; background: #000;
-    border: 1px solid #333; border-radius: 8px; color: white; font-size: 15px; outline: none;
+    width: 100%; 
+    box-sizing: border-box; 
+    padding: 12px; 
+    background: #000;
+    border: 1px solid #333; 
+    border-radius: 8px; 
+    color: white; 
+    font-size: 15px; 
+    outline: none;
 }
-.auth-input:focus { border-color: #28a745; }
-.flag-box {
-    display: flex; align-items: center; background: #000; border: 1px solid #333;
-    border-radius: 8px; padding: 10px; margin-bottom: 15px; color: white;
-    font-size: 15px; justify-content: center; gap: 10px;
+
+.auth-input:focus { 
+    border-color: #28a745; 
 }
+
 .btn-auth-green {
-    width: 100%; background-color: #28a745; color: white; border: none; border-radius: 8px;
-    padding: 15px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; transition: 0.2s;
+    width: 100%; 
+    background-color: #28a745; 
+    color: white; 
+    border: none; 
+    border-radius: 8px;
+    padding: 15px; 
+    font-weight: bold; 
+    font-size: 16px; 
+    cursor: pointer; 
+    margin-top: 10px; 
+    transition: 0.2s;
 }
-.btn-auth-green:active { transform: scale(0.98); }
+
+.btn-auth-green:active { 
+    transform: scale(0.98); 
+}
+
 .btn-auth-outline {
-    width: 100%; background-color: transparent; color: #28a745; border: 1px solid #28a745;
-    border-radius: 8px; padding: 15px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 15px;
+    width: 100%; 
+    background-color: transparent; 
+    color: #28a745; 
+    border: 1px solid #28a745;
+    border-radius: 8px; 
+    padding: 15px; 
+    font-weight: bold; 
+    font-size: 16px; 
+    cursor: pointer; 
+    margin-top: 15px;
 }
-.auth-switch-text { margin-top: 20px; color: #888; font-size: 13px; }
-.auth-switch-text span { color: #e50b2e; font-weight: bold; cursor: pointer; }
+
+.auth-switch-text { 
+    margin-top: 20px; 
+    color: #888; 
+    font-size: 13px; 
+}
+
+.auth-switch-text span { 
+    color: #e50b2e; 
+    font-weight: bold; 
+    cursor: pointer; 
+}
+
 .credentials-box {
-    background: #242424; padding: 15px; border-radius: 8px; margin-bottom: 20px;
-    border: 1px dashed #28a745; text-align: left;
+    background: #242424; 
+    padding: 15px; 
+    border-radius: 8px; 
+    margin-bottom: 20px;
+    border: 1px dashed #28a745; 
+    text-align: left;
 }
-.cred-item { color: white; font-size: 14px; margin-bottom: 10px; font-family: monospace; }
-.cred-item span { color: #28a745; font-weight: bold; }
+
+.cred-item { 
+    color: white; 
+    font-size: 14px; 
+    margin-bottom: 10px; 
+    font-family: monospace; 
+}
+
+.cred-item span { 
+    color: #28a745; 
+    font-weight: bold; 
+}
 
 .menu-logout {
-    padding: 15px; text-align: center; border-top: 1px solid #333;
-    color: #e50b2e; font-weight: bold; cursor: pointer; background: #111; margin-top: auto;
+    padding: 15px; 
+    text-align: center; 
+    border-top: 1px solid #333;
+    color: #e50b2e; 
+    font-weight: bold; 
+    cursor: pointer; 
+    background: #111; 
+    margin-top: auto;
 }
-.menu-logout:active { background: #222; }
 
-input, textarea { user-select: text; -webkit-user-select: text; }
+.menu-logout:active { 
+    background: #222; 
+}
+
+input, select, textarea { 
+    user-select: text; 
+    -webkit-user-select: text; 
+}
   </style>
 </head>
 <body>
@@ -618,14 +1465,18 @@ input, textarea { user-select: text; -webkit-user-select: text; }
       <!-- REGISTER -->
       <div id="authRegister" style="display:none;">
         <div class="auth-title">Register Account</div>
-        <div class="flag-box">
-          <span style="font-size:20px">🇱🇰</span>
-          <span>Sri Lanka (+94)</span>
-        </div>
+        
         <div class="auth-input-group">
-          <label>Promo Code (Optional)</label>
-          <input id="promoCodeInput" type="text" class="auth-input" placeholder="Enter Promo Code" />
+          <label>Select Country</label>
+          <select id="countrySelect" class="auth-input" style="appearance: auto; cursor: pointer;">
+            <option value="LKR" selected>🇱🇰 Sri Lanka (LKR)</option>
+            <option value="BDT">🇧🇩 Bangladesh (BDT)</option>
+            <option value="INR">🇮🇳 India (INR)</option>
+            <option value="PKR">🇵🇰 Pakistan (PKR)</option>
+            <option value="MAD">🇲🇦 Morocco (MAD)</option>
+          </select>
         </div>
+
         <button id="registerBtn" class="btn-auth-green">Register Now</button>
         <div class="auth-switch-text">
           Already have an account? <span id="goLogin">Login</span>
@@ -648,6 +1499,7 @@ input, textarea { user-select: text; -webkit-user-select: text; }
 
   <!-- GAME ROOT -->
   <div id="gameRoot" class="app-container" style="display:none;">
+    <div id="backendConnectingScreen" class="backend-connecting">CONNECTING...</div>
     <audio id="bgMusic" loop src="https://media.vocaroo.com/mp3/12vLJZF5qSMk"></audio>
     <audio id="cashoutSound" src="https://actions.google.com/sounds/v1/foley/coin_jingle.ogg"></audio>
 
@@ -659,7 +1511,12 @@ input, textarea { user-select: text; -webkit-user-select: text; }
       </div>
     </div>
 
-    <div id="historyBar" class="history-bar"></div>
+    <!-- NEW: HISTORY BAR WITH DROPDOWN -->
+    <div class="history-wrapper">
+        <div id="historyBar" class="history-bar"></div>
+        <div id="historyExpandBtn" class="history-expand-btn">....</div>
+        <div id="historyDropdown" class="history-dropdown"></div>
+    </div>
 
     <div class="game-screen">
       <div class="rays"></div>
@@ -674,6 +1531,7 @@ input, textarea { user-select: text; -webkit-user-select: text; }
           <span class="avi">Aviator</span>
         </div>
         <div class="partners-text">OFFICIAL PARTNERS</div>
+        <div id="syncMessage" style="display:none; color:#ccc; font-size:12px;">Waiting for next round...</div>
         <div class="loading-bar-container">
           <div id="loadingBar" class="loading-bar"></div>
         </div>
@@ -769,9 +1627,9 @@ input, textarea { user-select: text; -webkit-user-select: text; }
       </div>
       <div class="live-bets-header">
         <div class="col-user">Player</div>
-        <div class="col-bet">Bet LKR</div>
+        <div class="col-bet" id="lblBetCur">Bet LKR</div>
         <div class="col-mult">X</div>
-        <div class="col-win">Win LKR</div>
+        <div class="col-win" id="lblWinCur">Win LKR</div>
       </div>
       <div id="livePlayersList"></div>
     </div>
@@ -834,6 +1692,17 @@ input, textarea { user-select: text; -webkit-user-select: text; }
           <li>Watch the multiplier increase as the plane flies.</li>
           <li><span style="color:#28a745;">Cash out before the plane flies away</span> to win your bet X the multiplier.</li>
           <li>If the plane flies away before you cash out, you lose your bet.</li>
+        </ul>
+        <h3 style="color:white;">Betting Limits</h3>
+        <ul>
+          <li>Minimum Bet: <b id="ruleMinBet">20.00 LKR</b></li>
+          <li>Maximum Bet: <b id="ruleMaxBet">50,000.00 LKR</b></li>
+        </ul>
+        <h3 style="color:white;">Daily Win Limits & Auto Cashout</h3>
+        <ul>
+          <li>Daily maximum win: <b id="ruleMaxWin">500,000.00 LKR</b></li>
+          <li>If a running bet's potential win reaches your remaining daily limit, it will auto cash out.</li>
+          <li>If you hit daily max, bets lock for 24 hours.</li>
         </ul>
       </div>
     </div>
@@ -943,10 +1812,8 @@ input, textarea { user-select: text; -webkit-user-select: text; }
     </div>
 
 
-    <!-- SUPPORT MODAL (UPDATED to match design) -->
+    <!-- SUPPORT MODAL -->
     <div id="supportModal" class="support-modal" style="display:none;">
-      
-      <!-- Top Header -->
       <div class="support-header">
         <button id="supportBack" class="support-icon-btn">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="#5a738e"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
@@ -959,14 +1826,12 @@ input, textarea { user-select: text; -webkit-user-select: text; }
         </button>
       </div>
 
-      <!-- Chat Body -->
       <div id="supportBody" class="support-body">
         <div class="date-badge">Today</div>
         <div id="chatList"></div>
         <div id="chatEnd"></div>
       </div>
 
-      <!-- Chat Footer -->
       <div class="support-footer">
         <input id="chatFile" type="file" accept="image/*" style="display:none;">
         <button id="attachBtn" class="support-icon-btn" style="transform: rotate(45deg); padding: 0;">
@@ -979,479 +1844,844 @@ input, textarea { user-select: text; -webkit-user-select: text; }
           <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
       </div>
-
     </div>
+
   </div>
 
 <script>
 // --- SUPABASE INITIALIZATION ---
-// Initialize Supabase with the provided Project URL and Publishable Key
 const supabaseUrl = 'https://vtobhkwzvwaaxxtikxfq.supabase.co';
 const supabaseKey = 'sb_publishable_839dZUvDqZvNy9n5HtIttA_Nz3cWsdn';
-// Checks if the Supabase SDK is available via CDN before creating the client instance
-const supabase = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
+const supabaseClient = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
 // -------------------------------
 
 (() => {
   const $ = (s) => document.querySelector(s);
   const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
 
-  const authRoot=$("#authRoot"), gameRoot=$("#gameRoot");
-  const authLogin=$("#authLogin"), authRegister=$("#authRegister"), authCredentials=$("#authCredentials");
-  const loginIdInput=$("#loginIdInput"), loginPwInput=$("#loginPwInput"), promoCodeInput=$("#promoCodeInput");
-  const newUserIdText=$("#newUserIdText"), newPwText=$("#newPwText");
-  const loginBtn=$("#loginBtn"), registerBtn=$("#registerBtn"), goRegister=$("#goRegister"), goLogin=$("#goLogin"), goToLoginBtn=$("#goToLoginBtn");
+  const authRoot = $("#authRoot");
+  const gameRoot = $("#gameRoot");
+  const authLogin = $("#authLogin");
+  const authRegister = $("#authRegister");
+  const authCredentials = $("#authCredentials");
+  const loginIdInput = $("#loginIdInput");
+  const loginPwInput = $("#loginPwInput");
+  const newUserIdText = $("#newUserIdText");
+  const newPwText = $("#newPwText");
+  const loginBtn = $("#loginBtn");
+  const registerBtn = $("#registerBtn");
+  const goRegister = $("#goRegister");
+  const goLogin = $("#goLogin");
+  const goToLoginBtn = $("#goToLoginBtn");
+  const countrySelect = $("#countrySelect");
 
-  const balanceText=$("#balanceText"), menuUserId=$("#menuUserId");
-  const historyBar=$("#historyBar"), canvas=$("#gameCanvas"), plane=$("#plane-container"), waitingScreen=$("#waiting-screen");
-  const loadingBar=$("#loadingBar"), multiplierText=$("#multiplierText"), cashoutToast=$("#cashoutToast");
-  const userCountText=$("#userCountText"), liveBetsCount=$("#liveBetsCount"), livePlayersList=$("#livePlayersList");
-  const bgMusic=$("#bgMusic"), cashoutSound=$("#cashoutSound");
+  const balanceText = $("#balanceText");
+  const menuUserId = $("#menuUserId");
+  const historyBar = $("#historyBar");
+  
+  // New history elements
+  const historyExpandBtn = $("#historyExpandBtn");
+  const historyDropdown = $("#historyDropdown");
+  let historyExpanded = false;
 
-  const bet1Minus=$("#bet1Minus"), bet1Plus=$("#bet1Plus"), bet1Input=$("#bet1Input"), bet1Action=$("#bet1Action"), bet1Text=$("#bet1Text"), bet1Amt=$("#bet1Amt");
-  const bet2Minus=$("#bet2Minus"), bet2Plus=$("#bet2Plus"), bet2Input=$("#bet2Input"), bet2Action=$("#bet2Action"), bet2Text=$("#bet2Text"), bet2Amt=$("#bet2Amt");
+  const canvas = $("#gameCanvas");
+  const plane = $("#plane-container");
+  const waitingScreen = $("#waiting-screen");
+  const syncMessage = $("#syncMessage");
+  const loadingBar = $("#loadingBar");
+  const multiplierText = $("#multiplierText");
+  const cashoutToast = $("#cashoutToast");
+  const backendConnectingScreen = $("#backendConnectingScreen");
+  const userCountText = $("#userCountText");
+  const liveBetsCount = $("#liveBetsCount");
+  const livePlayersList = $("#livePlayersList");
+  const bgMusic = $("#bgMusic");
+  const cashoutSound = $("#cashoutSound");
 
-  const menuOpenBtn=$("#menuOpenBtn"), menuOverlay=$("#menu-overlay"), sideMenu=$("#side-menu"), menuHome=$("#menuHome");
-  const musicToggle=$("#musicToggle"), openHistory=$("#openHistory"), openDeposit=$("#openDeposit"), openWithdraw=$("#openWithdraw");
-  const openSupport=$("#openSupport"), openProfile=$("#openProfile"), openRules=$("#openRules"), logoutBtn=$("#logoutBtn");
+  const bet1Minus = $("#bet1Minus");
+  const bet1Plus = $("#bet1Plus");
+  const bet1Input = $("#bet1Input");
+  const bet1Action = $("#bet1Action");
+  const bet1Text = $("#bet1Text");
+  const bet1Amt = $("#bet1Amt");
 
-  const rulesModal=$("#rulesModal"), rulesClose=$("#rulesClose");
-  const historyModal=$("#historyModal"), historyClose=$("#historyClose"), historyList=$("#historyList");
-  const depositModal=$("#depositModal"), depositClose=$("#depositClose"), depTronBtn=$("#depTronBtn"), depBscBtn=$("#depBscBtn");
-  const depQr=$("#depQr"), depAddressText=$("#depAddressText"), depCopyBtn=$("#depCopyBtn"), depositAmount=$("#depositAmount"), depositConfirm=$("#depositConfirm");
-  const withdrawModal=$("#withdrawModal"), withdrawClose=$("#withdrawClose"), withTronBtn=$("#withTronBtn"), withBscBtn=$("#withBscBtn"), withBankBtn=$("#withBankBtn"), withdrawForm=$("#withdrawForm");
-  const profileModal=$("#profileModal"), profileClose=$("#profileClose"), pfFirstName=$("#pfFirstName"), pfLastName=$("#pfLastName"), pfDob=$("#pfDob"), pfAddress=$("#pfAddress"), pfNic=$("#pfNic");
-  const calendarWrap=$("#calendarWrap"), profileSave=$("#profileSave"), profileLockedText=$("#profileLockedText");
-  const supportModal=$("#supportModal"), supportBack=$("#supportBack"), chatList=$("#chatList"), chatEnd=$("#chatEnd"), chatInput=$("#chatInput"), chatFile=$("#chatFile"), attachBtn=$("#attachBtn"), sendBtn=$("#sendBtn");
+  const bet2Minus = $("#bet2Minus");
+  const bet2Plus = $("#bet2Plus");
+  const bet2Input = $("#bet2Input");
+  const bet2Action = $("#bet2Action");
+  const bet2Text = $("#bet2Text");
+  const bet2Amt = $("#bet2Amt");
 
-  const DAILY_MAX_WIN=500000;
-  const state={
-    isLoggedIn:false, authScreen:"login",
-    musicOn:true, musicStarted:false,
-    balance:3540.0,
-    history:[
-      {val:20.08,type:"hist-high"},{val:2.36,type:"hist-mid"},{val:1.01,type:"hist-low"},
-      {val:5.85,type:"hist-high"},{val:1.04,type:"hist-low"},{val:2.50,type:"hist-mid"},{val:1.01,type:"hist-low"}
+  const menuOpenBtn = $("#menuOpenBtn");
+  const menuOverlay = $("#menu-overlay");
+  const sideMenu = $("#side-menu");
+  const menuHome = $("#menuHome");
+  const musicToggle = $("#musicToggle");
+  const openHistory = $("#openHistory");
+  const openDeposit = $("#openDeposit");
+  const openWithdraw = $("#openWithdraw");
+  const openSupport = $("#openSupport");
+  const openProfile = $("#openProfile");
+  const openRules = $("#openRules");
+  const logoutBtn = $("#logoutBtn");
+
+  const rulesModal = $("#rulesModal");
+  const rulesClose = $("#rulesClose");
+  const historyModal = $("#historyModal");
+  const historyClose = $("#historyClose");
+  const historyList = $("#historyList");
+
+  const depositModal = $("#depositModal");
+  const depositClose = $("#depositClose");
+  const depTronBtn = $("#depTronBtn");
+  const depBscBtn = $("#depBscBtn");
+  const depQr = $("#depQr");
+  const depAddressText = $("#depAddressText");
+  const depCopyBtn = $("#depCopyBtn");
+  const depositAmount = $("#depositAmount");
+  const depositConfirm = $("#depositConfirm");
+
+  const withdrawModal = $("#withdrawModal");
+  const withdrawClose = $("#withdrawClose");
+  const withTronBtn = $("#withTronBtn");
+  const withBscBtn = $("#withBscBtn");
+  const withBankBtn = $("#withBankBtn");
+  const withdrawForm = $("#withdrawForm");
+
+  const profileModal = $("#profileModal");
+  const profileClose = $("#profileClose");
+  const pfFirstName = $("#pfFirstName");
+  const pfLastName = $("#pfLastName");
+  const pfDob = $("#pfDob");
+  const pfAddress = $("#pfAddress");
+  const pfNic = $("#pfNic");
+  const calendarWrap = $("#calendarWrap");
+  const profileSave = $("#profileSave");
+  const profileLockedText = $("#profileLockedText");
+
+  const supportModal = $("#supportModal");
+  const supportBack = $("#supportBack");
+  const chatList = $("#chatList");
+  const chatEnd = $("#chatEnd");
+  const chatInput = $("#chatInput");
+  const chatFile = $("#chatFile");
+  const attachBtn = $("#attachBtn");
+  const sendBtn = $("#sendBtn");
+
+  const DAILY_MAX_WIN = 500000;
+  
+  const state = {
+    isLoggedIn: false, 
+    authScreen: "login",
+    currency: "LKR",
+    musicOn: true, 
+    musicStarted: false,
+    balance: 3540.0,
+    history: [
+      {val: 20.08, type: "hist-high"},
+      {val: 2.36, type: "hist-mid"},
+      {val: 1.01, type: "hist-low"},
+      {val: 5.85, type: "hist-high"},
+      {val: 1.04, type: "hist-low"},
+      {val: 2.50, type: "hist-mid"},
+      {val: 1.01, type: "hist-low"}
     ],
-    userCount:24, livePlayers:[],
-    userBetHistory:[], chatMessages:[],
-    profileSaved:false, profileData:{firstName:"",lastName:"",dob:"",address:"",nic:""},
-    calDate:new Date(2000,0,1), showCalendar:false,
-    gamePhase:"waiting", multiplier:1.0, crashPoint:1.0,
-    bet1Value:20.0, bet2Value:50.0, bet1State:0, bet2State:0,
-    lastClickedPreset1:0, lastClickedPreset2:0,
-    dailyWinTotal:0, lockoutTime:null,
-    selectedCrypto:"tron", withdrawMethod:"tron"
+    userCount: 24, 
+    livePlayers: [],
+    userBetHistory: [], 
+    chatMessages: [],
+    profileSaved: false, 
+    profileData: {
+        firstName: "",
+        lastName: "",
+        dob: "",
+        address: "",
+        nic: ""
+    },
+    calDate: new Date(2000, 0, 1), 
+    showCalendar: false,
+    gamePhase: "waiting", 
+    multiplier: 1.0, 
+    crashPoint: 1.0,
+    bet1Value: 20.0, 
+    bet2Value: 50.0, 
+    bet1State: 0, 
+    bet2State: 0,
+    lastClickedPreset1: 0, 
+    lastClickedPreset2: 0,
+    dailyWinTotal: 0, 
+    lockoutTime: null,
+    selectedCrypto: "tron", 
+    withdrawMethod: "tron"
   };
 
-  let gameInterval=null, userInterval=null, timeouts=[];
-  const isLockedOut=()=>state.lockoutTime && (Date.now()-state.lockoutTime<24*60*60*1000);
+  let gameInterval = null;
+  let userInterval = null;
+  let timeouts = [];
+  let backendMultiplier = null;
+  let realtimeChannel = null;
+  let backendUpdatePending = false;
+  let backendRetryTimer = null;
+  let backendRequestId = 0;
+  let appWasHidden = false;
+  let lastResumeSync = 0;
+  
+  const isLockedOut = () => state.lockoutTime && (Date.now() - state.lockoutTime < 24 * 60 * 60 * 1000);
 
   function renderAuth(){
-    authLogin.style.display=state.authScreen==="login"?"block":"none";
-    authRegister.style.display=state.authScreen==="register"?"block":"none";
-    authCredentials.style.display=state.authScreen==="credentials"?"block":"none";
+    authLogin.style.display = state.authScreen === "login" ? "block" : "none";
+    authRegister.style.display = state.authScreen === "register" ? "block" : "none";
+    authCredentials.style.display = state.authScreen === "credentials" ? "block" : "none";
   }
-  function renderBalance(){ balanceText.textContent=`${state.balance.toFixed(2)} LKR`; }
-  function renderHistory(){ historyBar.innerHTML=state.history.map(h=>`<span class="${h.type}">${h.val.toFixed(2)}x</span>`).join(""); }
-  function renderUserCount(){ userCountText.textContent=String(state.userCount); liveBetsCount.textContent=`${state.userCount} Bets`; }
-  function renderBetsInputs(){ bet1Input.value=state.bet1Value.toFixed(2); bet2Input.value=state.bet2Value.toFixed(2); }
 
-  function setBetButton(box,{text,amt,className,disabled}){
-    const apply=(action,txt,am,minus,plus,presetSel)=>{
-      txt.textContent=text; am.textContent=amt;
-      action.className=className;
-      action.disabled=disabled; action.style.opacity=disabled?"0.6":"1"; action.style.cursor=disabled?"not-allowed":"pointer";
-      minus.disabled=disabled; plus.disabled=disabled;
-      document.querySelectorAll(presetSel).forEach(b=>b.disabled=disabled);
+  function renderBalance(){ 
+      balanceText.textContent = `${state.balance.toFixed(2)} ${state.currency}`; 
+  }
+
+  function renderHistory(){ 
+      const html = state.history.map(h => `<span class="${h.type}">${h.val.toFixed(2)}x</span>`).join("");
+      historyBar.innerHTML = html; 
+      historyDropdown.innerHTML = html;
+  }
+
+  function updateGlobalHistory(history){
+    if(!Array.isArray(history)) return;
+    state.history = history.map(item => {
+      const value = Number(typeof item === "object" && item !== null ? (item.val ?? item.multiplier) : item);
+      if(!Number.isFinite(value)) return null;
+      const type = value < 2 ? "hist-low" : value < 10 ? "hist-mid" : "hist-high";
+      return {val: value, type};
+    }).filter(Boolean).slice(0, 40);
+    renderHistory();
+  }
+
+  function renderUserCount(){ 
+      userCountText.textContent = String(state.userCount); 
+      liveBetsCount.textContent = `${state.userCount} Bets`; 
+  }
+
+  function renderBetsInputs(){ 
+      bet1Input.value = state.bet1Value.toFixed(2); 
+      bet2Input.value = state.bet2Value.toFixed(2); 
+  }
+
+  function setBetButton(box, {text, amt, className, disabled}){
+    const apply = (action, txt, am, minus, plus, presetSel) => {
+      txt.textContent = text; 
+      am.textContent = amt;
+      action.className = className;
+      action.disabled = disabled; 
+      action.style.opacity = disabled ? "0.6" : "1"; 
+      action.style.cursor = disabled ? "not-allowed" : "pointer";
+      minus.disabled = disabled; 
+      plus.disabled = disabled;
+      document.querySelectorAll(presetSel).forEach(b => b.disabled = disabled);
     };
-    if(box===1) apply(bet1Action,bet1Text,bet1Amt,bet1Minus,bet1Plus,'.presetBtn[data-box="1"]');
-    else apply(bet2Action,bet2Text,bet2Amt,bet2Minus,bet2Plus,'.presetBtn[data-box="2"]');
+    
+    if(box === 1) {
+        apply(bet1Action, bet1Text, bet1Amt, bet1Minus, bet1Plus, '.presetBtn[data-box="1"]');
+    } else {
+        apply(bet2Action, bet2Text, bet2Amt, bet2Minus, bet2Plus, '.presetBtn[data-box="2"]');
+    }
   }
 
-  function showToast(mult,amt){
-    cashoutToast.textContent=`${mult.toFixed(2)}x | ${amt.toFixed(2)} LKR`;
-    cashoutToast.style.display="block";
-    const t=setTimeout(()=>cashoutToast.style.display="none",3000); timeouts.push(t);
+  function showToast(mult, amt){
+    cashoutToast.textContent = `${mult.toFixed(2)}x | ${amt.toFixed(2)} ${state.currency}`;
+    cashoutToast.style.display = "block";
+    const t = setTimeout(() => cashoutToast.style.display = "none", 3000); 
+    timeouts.push(t);
   }
 
   function renderLivePlayers(){
-    livePlayersList.innerHTML=state.livePlayers.map(p=>`
-      <div class="live-bet-row ${p.cashedOut?"cashed-out":""}">
+    livePlayersList.innerHTML = state.livePlayers.map(p => `
+      <div class="live-bet-row ${p.cashedOut ? "cashed-out" : ""}">
         <div class="live-bet-user">
           <div class="live-bet-avatar" style="background-image:url('https://api.dicebear.com/7.x/avataaars/svg?seed=${p.avatarId}')"></div>
           ${p.name}
         </div>
         <div class="live-bet-bet">${p.bet.toFixed(2)}</div>
-        <div class="live-bet-mult" style="color:${p.cashedOut?"#28a745":"transparent"}">${p.cashedOut?`${p.mult.toFixed(2)}x`:"-"}</div>
-        <div class="live-bet-win">${p.cashedOut?p.win.toFixed(2):""}</div>
+        <div class="live-bet-mult" style="color:${p.cashedOut ? "#28a745" : "transparent"}">${p.cashedOut ? `${p.mult.toFixed(2)}x` : "-"}</div>
+        <div class="live-bet-win">${p.cashedOut ? p.win.toFixed(2) : ""}</div>
       </div>
     `).join("");
   }
 
-  function recordUserHistory(betAmt,cashOutMult,winAmt,status){
-    const now=new Date();
+  function recordUserHistory(betAmt, cashOutMult, winAmt, status){
+    const now = new Date();
     state.userBetHistory.unshift({
-      betAmt,cashOutMult,winAmt,status,
-      date:now.toLocaleDateString(),
-      time:now.toLocaleTimeString()
+      betAmt,
+      cashOutMult,
+      winAmt,
+      status,
+      date: now.toLocaleDateString(),
+      time: now.toLocaleTimeString()
     });
   }
-  
+
   function renderBetHistoryModal(){
-    if(state.userBetHistory.length===0){
-      historyList.innerHTML=`<p style="color:#888; text-align:center; margin-top:50px;">No history yet.</p>`;
+    if(state.userBetHistory.length === 0){
+      historyList.innerHTML = `<p style="color:#888; text-align:center; margin-top:50px;">No history yet.</p>`;
       return;
     }
-    historyList.innerHTML=state.userBetHistory.map(item=>`
-      <div style="background:#242424; padding:15px; border-radius:10px; margin-bottom:15px; border-left:${item.status==="won"?"5px solid #28a745":"5px solid #e50b2e"};">
+    historyList.innerHTML = state.userBetHistory.map(item => `
+      <div style="background:#242424; padding:15px; border-radius:10px; margin-bottom:15px; border-left:${item.status === "won" ? "5px solid #28a745" : "5px solid #e50b2e"};">
         <div style="display:flex; justify-content:space-between; color:#ccc; font-size:12px; margin-bottom:8px;">
           <span>${item.date} • ${item.time}</span>
-          <span style="color:${item.status==="won"?"#28a745":"#e50b2e"}; font-weight:bold;">${item.status==="won"?"WON":"LOST"}</span>
+          <span style="color:${item.status === "won" ? "#28a745" : "#e50b2e"}; font-weight:bold;">${item.status === "won" ? "WON" : "LOST"}</span>
         </div>
         <div style="display:flex; justify-content:space-between; color:white; font-size:14px; margin-bottom:5px;">
-          <span>Bet: ${item.betAmt.toFixed(2)} LKR</span>
-          <span>${item.status==="won"?"Cashed Out":"Crashed"}: ${item.cashOutMult.toFixed(2)}x</span>
+          <span>Bet: ${item.betAmt.toFixed(2)} ${state.currency}</span>
+          <span>${item.status === "won" ? "Cashed Out" : "Crashed"}: ${item.cashOutMult.toFixed(2)}x</span>
         </div>
-        <div style="text-align:right; color:${item.status==="won"?"#28a745":"#888"}; font-weight:bold; font-size:16px;">
-          Win: ${item.winAmt.toFixed(2)} LKR
+        <div style="text-align:right; color:${item.status === "won" ? "#28a745" : "#888"}; font-weight:bold; font-size:16px;">
+          Win: ${item.winAmt.toFixed(2)} ${state.currency}
         </div>
       </div>
     `).join("");
   }
 
-  function escapeHtml(s){ return s.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
-  
+  function escapeHtml(s){ 
+      return s.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); 
+  }
+
   function renderSupportMessages(){
-    chatList.innerHTML=state.chatMessages.map(msg=>{
-      if(msg.type==="text") return `<div class="user-message">${escapeHtml(msg.text)}<span class="msg-time">${msg.time}</span></div>`;
+    chatList.innerHTML = state.chatMessages.map(msg => {
+      if(msg.type === "text") {
+          return `<div class="user-message">${escapeHtml(msg.text)}<span class="msg-time">${msg.time}</span></div>`;
+      }
       return `<div class="user-message img-msg"><img src="${msg.imgUrl}" alt="uploaded"/><span class="msg-time">${msg.time}</span></div>`;
     }).join("");
-    chatEnd.scrollIntoView({behavior:"smooth"});
+    chatEnd.scrollIntoView({behavior: "smooth"});
   }
 
   function resizeCanvas(){
-    canvas.width=canvas.offsetWidth;
-    canvas.height=canvas.offsetHeight;
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
   }
 
   function generateDummyPlayers(){
-    const bets=[20,50,100,200,500,1000,5000];
-    let players=[];
-    for(let i=0;i<20;i++){
-      let multTarget=1.01+Math.random()*5.0;
-      if(Math.random()>0.8) multTarget+=Math.random()*10;
+    const bets = [20, 50, 100, 200, 500, 1000, 5000];
+    let players = [];
+    for(let i = 0; i < 20; i++){
+      let multTarget = 1.01 + Math.random() * 5.0;
+      if(Math.random() > 0.8) multTarget += Math.random() * 10;
       players.push({
-        id:i,
-        name:`${Math.floor(Math.random()*9)+1}***${Math.floor(Math.random()*9)+1}`,
-        bet:bets[Math.floor(Math.random()*bets.length)],
-        targetCashout:multTarget,
-        cashedOut:false, mult:null, win:null,
-        avatarId:Math.floor(Math.random()*4)+1
+        id: i,
+        name: `${Math.floor(Math.random() * 9) + 1}***${Math.floor(Math.random() * 9) + 1}`,
+        bet: bets[Math.floor(Math.random() * bets.length)],
+        targetCashout: multTarget,
+        cashedOut: false, 
+        mult: null, 
+        win: null,
+        avatarId: Math.floor(Math.random() * 4) + 1
       });
     }
-    players.sort((a,b)=>b.bet-a.bet);
+    players.sort((a, b) => b.bet - a.bet);
     return players;
   }
 
   function startIncreasingUsers(){
     clearInterval(userInterval);
-    const target=Math.floor(Math.random()*(11500-850+1))+850;
-    let current=24; state.userCount=current; renderUserCount();
-    userInterval=setInterval(()=>{
-      if(current<target){
-        current+=Math.floor(Math.random()*300)+50;
-        if(current>target) current=target;
-        state.userCount=current; renderUserCount();
+    const target = Math.floor(Math.random() * (11500 - 850 + 1)) + 850;
+    let current = 24; 
+    state.userCount = current; 
+    renderUserCount();
+    
+    userInterval = setInterval(() => {
+      if(current < target){
+        current += Math.floor(Math.random() * 300) + 50;
+        if(current > target) current = target;
+        state.userCount = current; 
+        renderUserCount();
       }
-    },80);
+    }, 80);
   }
 
   function ensureMusicStartOnce(){
     if(!state.musicStarted && state.musicOn){
-      bgMusic.play().then(()=>state.musicStarted=true).catch(()=>{});
+      bgMusic.play().then(() => state.musicStarted = true).catch(() => {});
     }
   }
 
-  function handleCashout(btnNum,inputVal){
-    let winAmt=inputVal*state.multiplier;
-    if(state.dailyWinTotal+winAmt>=DAILY_MAX_WIN){
-      winAmt=DAILY_MAX_WIN-state.dailyWinTotal;
-      state.lockoutTime=Date.now();
-      alert("Congratulations! You have reached your Daily Maximum Win limit of 500,000 LKR. You cannot place new bets for 24 hours.");
+  function handleCashout(btnNum, inputVal){
+    let winAmt = inputVal * state.multiplier;
+    if(state.dailyWinTotal + winAmt >= DAILY_MAX_WIN){
+      winAmt = DAILY_MAX_WIN - state.dailyWinTotal;
+      state.lockoutTime = Date.now();
+      alert("Congratulations! You have reached your Daily Maximum Win limit. You cannot place new bets for 24 hours.");
     }
-    state.balance+=winAmt;
-    state.dailyWinTotal+=winAmt;
-    recordUserHistory(inputVal,state.multiplier,winAmt,"won");
+    state.balance += winAmt;
+    state.dailyWinTotal += winAmt;
+    recordUserHistory(inputVal, state.multiplier, winAmt, "won");
     renderBalance();
-    try{ cashoutSound.currentTime=0; cashoutSound.play(); }catch{}
-    showToast(state.multiplier,winAmt);
+    
+    try { 
+        cashoutSound.currentTime = 0; 
+        cashoutSound.play(); 
+    } catch {}
+    
+    showToast(state.multiplier, winAmt);
 
-    if(btnNum===1){
-      state.bet1State=3;
-      setBetButton(1,{text:`WON ${winAmt.toFixed(2)}`,amt:"LKR",className:"btn-bet",disabled:true});
-    }else{
-      state.bet2State=3;
-      setBetButton(2,{text:`WON ${winAmt.toFixed(2)}`,amt:"LKR",className:"btn-bet",disabled:true});
+    if(btnNum === 1){
+      state.bet1State = 3;
+      setBetButton(1, {text: `WON ${winAmt.toFixed(2)}`, amt: state.currency, className: "btn-bet", disabled: true});
+    } else {
+      state.bet2State = 3;
+      setBetButton(2, {text: `WON ${winAmt.toFixed(2)}`, amt: state.currency, className: "btn-bet", disabled: true});
+    }
+
+    // SUPABASE: Save Won Bet to Database
+    if (supabaseClient && state.isLoggedIn) {
+        supabaseClient.from('bets').insert([{
+            user_id: menuUserId.textContent,
+            bet_amount: inputVal,
+            currency: state.currency,
+            cashout_multiplier: state.multiplier,
+            win_amount: winAmt,
+            status: 'won',
+            timestamp: new Date().toISOString()
+        }]).then(res => {
+            if(res.error) console.log("Cashout DB Save Error:", res.error);
+        });
     }
   }
 
   function toggleBetAction(btnNum){
     ensureMusicStartOnce();
-    const st=btnNum===1?state.bet1State:state.bet2State;
-    const inputVal=btnNum===1?state.bet1Value:state.bet2Value;
+    const st = btnNum === 1 ? state.bet1State : state.bet2State;
+    const inputVal = btnNum === 1 ? state.bet1Value : state.bet2Value;
 
-    if(state.gamePhase==="waiting" && st===0){
+    if(state.gamePhase === "waiting" && st === 0){
       if(isLockedOut()){
-        alert("ඔබගේ දෛනික උපරිම ජයග්‍රහණ සීමාව (500,000 LKR) ඉක්මවා ඇත. කරුණාකර පැය 24ක් රැඳී සිටින්න.");
+        alert("ඔබගේ දෛනික උපරිම ජයග්‍රහණ සීමාව ඉක්මවා ඇත. කරුණාකර පැය 24ක් රැඳී සිටින්න.");
         return;
       }
-      if(state.balance<inputVal){ alert("ගිණුමේ ප්‍රමාණවත් මුදලක් නොමැත!"); return; }
-      state.balance-=inputVal; renderBalance();
-
-      if(btnNum===1){
-        state.bet1State=1;
-        setBetButton(1,{text:"WAITING",amt:"Next Round",className:"btn-bet btn-waiting",disabled:true});
-      }else{
-        state.bet2State=1;
-        setBetButton(2,{text:"WAITING",amt:"Next Round",className:"btn-bet btn-waiting",disabled:true});
+      if(state.balance < inputVal){ 
+          alert("ගිණුමේ ප්‍රමාණවත් මුදලක් නොමැත!"); 
+          return; 
       }
-    } else if(state.gamePhase==="flying" && st===2){
-      handleCashout(btnNum,inputVal);
+      state.balance -= inputVal; 
+      renderBalance();
+
+      if(btnNum === 1){
+        state.bet1State = 1;
+        setBetButton(1, {text: "WAITING", amt: "Next Round", className: "btn-bet btn-waiting", disabled: true});
+      } else {
+        state.bet2State = 1;
+        setBetButton(2, {text: "WAITING", amt: "Next Round", className: "btn-bet btn-waiting", disabled: true});
+      }
+
+      // SUPABASE: Save Placed Bet to Database
+      if (supabaseClient && state.isLoggedIn) {
+          supabaseClient.from('bets').insert([{
+              user_id: menuUserId.textContent,
+              bet_amount: inputVal,
+              currency: state.currency,
+              status: 'running',
+              timestamp: new Date().toISOString()
+          }]).then(res => {
+              if(res.error) console.log("Bet DB Save Error:", res.error);
+          });
+      }
+
+    } else if(state.gamePhase === "flying" && st === 2){
+      handleCashout(btnNum, inputVal);
     }
   }
 
   function startWaitingPhase(){
-    state.gamePhase="waiting";
-    state.bet1State=0; state.bet2State=0;
-    setBetButton(1,{text:"BET",amt:`${state.bet1Value.toFixed(2)} LKR`,className:"btn-bet",disabled:isLockedOut()});
-    setBetButton(2,{text:"BET",amt:`${state.bet2Value.toFixed(2)} LKR`,className:"btn-bet",disabled:isLockedOut()});
+    backendConnectingScreen.style.display = "none";
+    state.gamePhase = "waiting";
+    state.bet1State = 0; 
+    state.bet2State = 0;
+    
+    setBetButton(1, {text: "BET", amt: `${state.bet1Value.toFixed(2)} ${state.currency}`, className: "btn-bet", disabled: isLockedOut()});
+    setBetButton(2, {text: "BET", amt: `${state.bet2Value.toFixed(2)} ${state.currency}`, className: "btn-bet", disabled: isLockedOut()});
 
-    state.livePlayers=generateDummyPlayers(); renderLivePlayers();
-    multiplierText.style.display="none";
+    state.livePlayers = generateDummyPlayers(); 
+    renderLivePlayers();
+    multiplierText.style.display = "none";
 
-    const ctx=canvas.getContext("2d");
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    waitingScreen.style.display="flex";
-    plane.style.display="none";
+    waitingScreen.style.display = "flex";
+    plane.style.display = "none";
 
-    loadingBar.style.transition="none"; loadingBar.style.width="0%";
-    timeouts.push(setTimeout(()=>{
-      loadingBar.style.transition="width 6s linear";
-      loadingBar.style.width="100%";
-    },50));
+    loadingBar.style.transition = "none"; 
+    loadingBar.style.width = "0%";
+    
+    timeouts.push(setTimeout(() => {
+      loadingBar.style.transition = "width 6s linear";
+      loadingBar.style.width = "100%";
+    }, 50));
 
     startIncreasingUsers();
 
-    timeouts.push(setTimeout(()=>{
-      waitingScreen.style.display="none";
-      multiplierText.style.display="block";
-      plane.style.display="block";
+    syncMessage.style.display = "none";
+
+    timeouts.push(setTimeout(() => {
+      waitingScreen.style.display = "none";
+      multiplierText.style.display = "block";
+      plane.style.display = "block";
       startGame();
-    },6000));
+    }, 6000));
+  }
+
+  function startWaitingPhaseSync(newMult){
+    const multiplier = Number(newMult);
+    if(!Number.isFinite(multiplier) || multiplier < 1) return;
+    if(state.gamePhase !== "initializing" && state.gamePhase !== "crashed") return;
+    if(backendRetryTimer){
+      clearTimeout(backendRetryTimer);
+      backendRetryTimer = null;
+    }
+    backendMultiplier = multiplier;
+    startWaitingPhase();
+  }
+
+  function triggerBackendUpdate(){
+    if(backendUpdatePending) return;
+    backendUpdatePending = true;
+    const requestId = ++backendRequestId;
+
+    fetch("https://vtobhkwzvwaaxxtikxfq.supabase.co/functions/v1/crash-multiplier", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${supabaseKey}`,
+        "apikey": supabaseKey
+      }
+    })
+    .then(res => {
+      if(!res.ok) throw new Error(`Backend request failed (${res.status})`);
+      return res.json();
+    })
+    .then(data => {
+      if(requestId !== backendRequestId) return;
+      if(data && data.history) updateGlobalHistory(data.history);
+
+      if(data && data.updated === true){
+        const multiplier = Number(data.multiplier);
+        if(Number.isFinite(multiplier)) startWaitingPhaseSync(multiplier);
+      } else if(data && data.updated === false &&
+                (state.gamePhase === "initializing" || state.gamePhase === "crashed")){
+        syncMessage.style.display = "block";
+        syncMessage.textContent = "Waiting for next round...";
+        if(!backendRetryTimer){
+          backendRetryTimer = setTimeout(() => {
+            backendRetryTimer = null;
+            triggerBackendUpdate();
+          }, 5000);
+          timeouts.push(backendRetryTimer);
+        }
+      }
+    })
+    .catch(err => {
+      if(requestId !== backendRequestId) return;
+      console.error("Edge function error:", err);
+      if(state.gamePhase === "initializing" && !backendRetryTimer){
+        backendRetryTimer = setTimeout(() => {
+          backendRetryTimer = null;
+          triggerBackendUpdate();
+        }, 5000);
+        timeouts.push(backendRetryTimer);
+      }
+    })
+    .finally(() => {
+      if(requestId === backendRequestId) backendUpdatePending = false;
+    });
+  }
+
+  function resumeGameConnection(){
+    if(!state.isLoggedIn || gameRoot.style.display === "none") return;
+    const now = Date.now();
+    if(now - lastResumeSync < 1500) return;
+    lastResumeSync = now;
+    backendRequestId++;
+    backendUpdatePending = false;
+
+    backendConnectingScreen.style.display = "flex";
+    state.gamePhase = "initializing";
+    clearInterval(gameInterval);
+    clearInterval(userInterval);
+    timeouts.forEach(t => clearTimeout(t));
+    timeouts = [];
+    if(backendRetryTimer){
+      clearTimeout(backendRetryTimer);
+      backendRetryTimer = null;
+    }
+    syncMessage.style.display = "block";
+    syncMessage.textContent = "Reconnecting to game...";
+    setupRealtime();
+  }
+
+  function setupRealtime(){
+    if(supabaseClient){
+      if(realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
+      realtimeChannel = supabaseClient.channel("game-sync")
+        .on("postgres_changes", {event: "UPDATE", schema: "public", table: "game_state"}, payload => {
+          const row = payload.new || {};
+          const newMult = Number(row.current_multiplier);
+          if(Array.isArray(row.history_list)) updateGlobalHistory(row.history_list);
+          if((state.gamePhase === "initializing" || state.gamePhase === "crashed") && Number.isFinite(newMult)){
+            startWaitingPhaseSync(newMult);
+          }
+        })
+        .subscribe();
+    }
+    triggerBackendUpdate();
   }
 
   function startGame(){
-    state.gamePhase="flying";
-    state.multiplier=1.0;
+    state.gamePhase = "flying";
+    state.multiplier = 1.0;
     clearInterval(userInterval);
 
-    multiplierText.style.color="white";
-    multiplierText.style.fontSize="70px";
-    multiplierText.innerText="1.00x";
+    multiplierText.style.color = "white";
+    multiplierText.style.fontSize = "70px";
+    multiplierText.innerText = "1.00x";
 
-    if(state.bet1State===1){
-      state.bet1State=2;
-      setBetButton(1,{text:"CASH OUT",amt:`${(state.bet1Value*state.multiplier).toFixed(2)} LKR`,className:"btn-bet btn-cashout",disabled:false});
+    if(state.bet1State === 1){
+      state.bet1State = 2;
+      setBetButton(1, {text: "CASH OUT", amt: `${(state.bet1Value * state.multiplier).toFixed(2)} ${state.currency}`, className: "btn-bet btn-cashout", disabled: false});
     } else {
-      setBetButton(1,{text:bet1Text.textContent,amt:bet1Amt.textContent,className:bet1Action.className,disabled:true});
+      setBetButton(1, {text: bet1Text.textContent, amt: bet1Amt.textContent, className: bet1Action.className, disabled: true});
     }
-    if(state.bet2State===1){
-      state.bet2State=2;
-      setBetButton(2,{text:"CASH OUT",amt:`${(state.bet2Value*state.multiplier).toFixed(2)} LKR`,className:"btn-bet btn-cashout",disabled:false});
+    
+    if(state.bet2State === 1){
+      state.bet2State = 2;
+      setBetButton(2, {text: "CASH OUT", amt: `${(state.bet2Value * state.multiplier).toFixed(2)} ${state.currency}`, className: "btn-bet btn-cashout", disabled: false});
     } else {
-      setBetButton(2,{text:bet2Text.textContent,amt:bet2Amt.textContent,className:bet2Action.className,disabled:true});
+      setBetButton(2, {text: bet2Text.textContent, amt: bet2Amt.textContent, className: bet2Action.className, disabled: true});
     }
 
-    state.crashPoint=1.0+Math.random()*12;
+    // Set Crash Point from Backend API
+    if (backendMultiplier) {
+        state.crashPoint = backendMultiplier;
+        backendMultiplier = null; // reset for next round
+    } else {
+        // Crash at 1.01x if the backend did not return a value
+        state.crashPoint = 1.01;
+    }
 
-    plane.style.transition="none";
-    plane.style.opacity="1";
-    plane.style.transform="rotate(-10deg)";
+    plane.style.transition = "none";
+    plane.style.opacity = "1";
+    plane.style.transform = "rotate(-10deg)";
 
-    const ctx=canvas.getContext("2d");
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    let curveX=0, curveY=canvas.height;
-    const targetX=canvas.width*0.7, targetY=canvas.height*0.3;
-    let wobble=0, tickCount=0;
+    let curveX = 0;
+    let curveY = canvas.height;
+    const targetX = canvas.width * 0.7;
+    const targetY = canvas.height * 0.3;
+    let wobble = 0;
+    let tickCount = 0;
 
     clearInterval(gameInterval);
-    gameInterval=setInterval(()=>{
+    gameInterval = setInterval(() => {
       tickCount++;
-      state.multiplier+=0.001+(state.multiplier*0.005);
-      const m=state.multiplier;
-      multiplierText.innerText=`${m.toFixed(2)}x`;
+      state.multiplier += 0.001 + (state.multiplier * 0.005);
+      const m = state.multiplier;
+      multiplierText.innerText = `${m.toFixed(2)}x`;
 
-      if(tickCount%10===0){
-        let drop=0;
-        if(m<1.10) drop=Math.floor(Math.random()*5)+1;
-        else if(m<2.00) drop=Math.floor(Math.random()*20)+10;
-        else if(m<5.00) drop=Math.floor(Math.random()*50)+40;
-        else drop=Math.floor(Math.random()*300)+200;
-        state.userCount=Math.max(12,state.userCount-drop);
+      if(tickCount % 10 === 0){
+        let drop = 0;
+        if(m < 1.10) drop = Math.floor(Math.random() * 5) + 1;
+        else if(m < 2.00) drop = Math.floor(Math.random() * 20) + 10;
+        else if(m < 5.00) drop = Math.floor(Math.random() * 50) + 40;
+        else drop = Math.floor(Math.random() * 300) + 200;
+        state.userCount = Math.max(12, state.userCount - drop);
         renderUserCount();
       }
 
-      let changed=false;
-      state.livePlayers=state.livePlayers.map(p=>{
-        if(!p.cashedOut && m>=p.targetCashout){
-          changed=true;
-          return {...p,cashedOut:true,mult:m,win:p.bet*m};
+      let changed = false;
+      state.livePlayers = state.livePlayers.map(p => {
+        if(!p.cashedOut && m >= p.targetCashout){
+          changed = true;
+          return {...p, cashedOut: true, mult: m, win: p.bet * m};
         }
         return p;
       });
       if(changed) renderLivePlayers();
 
-      if(state.bet1State===2){
-        const w=state.bet1Value*m;
-        if(state.dailyWinTotal+w>=DAILY_MAX_WIN) handleCashout(1,state.bet1Value);
-        else setBetButton(1,{text:"CASH OUT",amt:`${w.toFixed(2)} LKR`,className:"btn-bet btn-cashout",disabled:false});
+      if(state.bet1State === 2){
+        const w = state.bet1Value * m;
+        if(state.dailyWinTotal + w >= DAILY_MAX_WIN) handleCashout(1, state.bet1Value);
+        else setBetButton(1, {text: "CASH OUT", amt: `${w.toFixed(2)} ${state.currency}`, className: "btn-bet btn-cashout", disabled: false});
       }
-      if(state.bet2State===2){
-        const w=state.bet2Value*m;
-        if(state.dailyWinTotal+w>=DAILY_MAX_WIN) handleCashout(2,state.bet2Value);
-        else setBetButton(2,{text:"CASH OUT",amt:`${w.toFixed(2)} LKR`,className:"btn-bet btn-cashout",disabled:false});
+      if(state.bet2State === 2){
+        const w = state.bet2Value * m;
+        if(state.dailyWinTotal + w >= DAILY_MAX_WIN) handleCashout(2, state.bet2Value);
+        else setBetButton(2, {text: "CASH OUT", amt: `${w.toFixed(2)} ${state.currency}`, className: "btn-bet btn-cashout", disabled: false});
       }
 
-      if(curveX<targetX) curveX+=2.5;
-      if(curveY>targetY) curveY-=1.8;
-      let x=curveX, y=curveY;
+      if(curveX < targetX) curveX += 2.5;
+      if(curveY > targetY) curveY -= 1.8;
+      
+      let x = curveX;
+      let y = curveY;
 
-      if(curveX>=targetX && curveY<=targetY){
-        wobble+=0.1;
-        y=targetY+Math.sin(wobble)*5;
-        plane.style.transform=`rotate(${Math.sin(wobble)*3-5}deg)`;
+      if(curveX >= targetX && curveY <= targetY){
+        wobble += 0.1;
+        y = targetY + Math.sin(wobble) * 5;
+        plane.style.transform = `rotate(${Math.sin(wobble) * 3 - 5}deg)`;
       }
-      plane.style.left=(x-8)+"px";
-      plane.style.top=(y-32)+"px";
+      
+      plane.style.left = (x - 8) + "px";
+      plane.style.top = (y - 32) + "px";
 
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.beginPath();
-      ctx.moveTo(0,canvas.height);
-      ctx.quadraticCurveTo(x*0.4,canvas.height,x,y);
-      ctx.lineTo(x,canvas.height);
-      ctx.fillStyle="rgba(229, 11, 46, 0.25)";
+      ctx.moveTo(0, canvas.height);
+      ctx.quadraticCurveTo(x * 0.4, canvas.height, x, y);
+      ctx.lineTo(x, canvas.height);
+      ctx.fillStyle = "rgba(229, 11, 46, 0.25)";
       ctx.fill();
 
       ctx.beginPath();
-      ctx.moveTo(0,canvas.height);
-      ctx.quadraticCurveTo(x*0.4,canvas.height,x,y);
-      ctx.strokeStyle="#e50b2e";
-      ctx.lineWidth=4;
+      ctx.moveTo(0, canvas.height);
+      ctx.quadraticCurveTo(x * 0.4, canvas.height, x, y);
+      ctx.strokeStyle = "#e50b2e";
+      ctx.lineWidth = 4;
       ctx.stroke();
 
-      if(state.multiplier>=state.crashPoint) crashGame();
-    },30);
+      if(state.multiplier >= state.crashPoint) {
+          crashGame();
+      }
+    }, 30);
   }
 
   function crashGame(){
     clearInterval(gameInterval);
-    state.gamePhase="crashed";
-    const finalMult=state.multiplier;
+    state.gamePhase = "crashed";
+    const finalMult = state.multiplier;
 
-    if(state.bet1State===2) recordUserHistory(state.bet1Value,finalMult,0,"lost");
-    if(state.bet2State===2) recordUserHistory(state.bet2Value,finalMult,0,"lost");
+    if(state.bet1State === 2) recordUserHistory(state.bet1Value, finalMult, 0, "lost");
+    if(state.bet2State === 2) recordUserHistory(state.bet2Value, finalMult, 0, "lost");
 
-    let type="hist-high";
-    if(finalMult>=1.0 && finalMult<2.0) type="hist-low";
-    else if(finalMult>=2.0 && finalMult<10.0) type="hist-mid";
-    state.history.unshift({val:finalMult,type}); if(state.history.length>20) state.history.pop();
+    let type = "hist-high";
+    if(finalMult >= 1.0 && finalMult < 2.0) type = "hist-low";
+    else if(finalMult >= 2.0 && finalMult < 10.0) type = "hist-mid";
+    
+    state.history.unshift({val: finalMult, type});
+    state.history = state.history.slice(0, 40);
     renderHistory();
 
-    plane.style.transition="all 0.5s ease-in";
-    plane.style.left=(canvas.width+100)+"px";
-    plane.style.top="-50px";
-    plane.style.transform="rotate(-30deg)";
+    plane.style.transition = "all 0.5s ease-in";
+    plane.style.left = (canvas.width + 100) + "px";
+    plane.style.top = "-50px";
+    plane.style.transform = "rotate(-30deg)";
 
-    setBetButton(1,{text:bet1Text.textContent,amt:bet1Amt.textContent,className:bet1Action.className,disabled:true});
-    setBetButton(2,{text:bet2Text.textContent,amt:bet2Amt.textContent,className:bet2Action.className,disabled:true});
+    setBetButton(1, {text: bet1Text.textContent, amt: bet1Amt.textContent, className: bet1Action.className, disabled: true});
+    setBetButton(2, {text: bet2Text.textContent, amt: bet2Amt.textContent, className: bet2Action.className, disabled: true});
 
-    timeouts.push(setTimeout(()=>{
-      multiplierText.style.color="#e50b2e";
-      multiplierText.style.fontSize="40px";
-      multiplierText.innerHTML=`FLEW AWAY<br>${state.multiplier.toFixed(2)}x`;
-      plane.style.opacity="0";
-      timeouts.push(setTimeout(()=>{
-        multiplierText.style.fontSize="70px";
-        startWaitingPhase();
-      },3000));
-    },500));
+    timeouts.push(setTimeout(() => {
+      multiplierText.style.color = "#e50b2e";
+      multiplierText.style.fontSize = "30px";
+      multiplierText.innerHTML = `FLEW AWAY<br>${state.multiplier.toFixed(2)}x`;
+      plane.style.opacity = "0";
+      
+      timeouts.push(setTimeout(() => {
+        multiplierText.style.fontSize = "70px";
+        triggerBackendUpdate();
+      }, 3500));
+    }, 500));
   }
 
-  function presetBet(box,amount){
-    let v=box===1?state.bet1Value:state.bet2Value;
-    let last=box===1?state.lastClickedPreset1:state.lastClickedPreset2;
-    v=(last===amount)?(v+amount):amount;
-    v=clamp(v,20,50000);
-    if(box===1){
-      state.lastClickedPreset1=amount; state.bet1Value=v;
-      if(state.bet1State===0) setBetButton(1,{text:"BET",amt:`${v.toFixed(2)} LKR`,className:"btn-bet",disabled:isLockedOut()});
-    }else{
-      state.lastClickedPreset2=amount; state.bet2Value=v;
-      if(state.bet2State===0) setBetButton(2,{text:"BET",amt:`${v.toFixed(2)} LKR`,className:"btn-bet",disabled:isLockedOut()});
+  function presetBet(box, amount){
+    let v = box === 1 ? state.bet1Value : state.bet2Value;
+    let last = box === 1 ? state.lastClickedPreset1 : state.lastClickedPreset2;
+    v = (last === amount) ? (v + amount) : amount;
+    v = clamp(v, 20, 50000);
+    
+    if(box === 1){
+      state.lastClickedPreset1 = amount; 
+      state.bet1Value = v;
+      if(state.bet1State === 0) {
+          setBetButton(1, {text: "BET", amt: `${v.toFixed(2)} ${state.currency}`, className: "btn-bet", disabled: isLockedOut()});
+      }
+    } else {
+      state.lastClickedPreset2 = amount; 
+      state.bet2Value = v;
+      if(state.bet2State === 0) {
+          setBetButton(2, {text: "BET", amt: `${v.toFixed(2)} ${state.currency}`, className: "btn-bet", disabled: isLockedOut()});
+      }
     }
     renderBetsInputs();
   }
 
-  function changeBet(box,step){
-    let v=box===1?state.bet1Value:state.bet2Value;
-    v=clamp(v+step,20,50000);
-    if(box===1){
-      state.lastClickedPreset1=0; state.bet1Value=v;
-      if(state.bet1State===0) setBetButton(1,{text:"BET",amt:`${v.toFixed(2)} LKR`,className:"btn-bet",disabled:isLockedOut()});
-    }else{
-      state.lastClickedPreset2=0; state.bet2Value=v;
-      if(state.bet2State===0) setBetButton(2,{text:"BET",amt:`${v.toFixed(2)} LKR`,className:"btn-bet",disabled:isLockedOut()});
+  function changeBet(box, step){
+    let v = box === 1 ? state.bet1Value : state.bet2Value;
+    v = clamp(v + step, 20, 50000);
+    
+    if(box === 1){
+      state.lastClickedPreset1 = 0; 
+      state.bet1Value = v;
+      if(state.bet1State === 0) {
+          setBetButton(1, {text: "BET", amt: `${v.toFixed(2)} ${state.currency}`, className: "btn-bet", disabled: isLockedOut()});
+      }
+    } else {
+      state.lastClickedPreset2 = 0; 
+      state.bet2Value = v;
+      if(state.bet2State === 0) {
+          setBetButton(2, {text: "BET", amt: `${v.toFixed(2)} ${state.currency}`, className: "btn-bet", disabled: isLockedOut()});
+      }
     }
     renderBetsInputs();
   }
 
-  function openMenu(){ sideMenu.classList.add("open"); menuOverlay.style.display="block"; }
-  function closeMenu(){ sideMenu.classList.remove("open"); menuOverlay.style.display="none"; }
-  function showModal(el){ el.style.display="block"; }
-  function hideModal(el){ el.style.display="none"; }
+  function openMenu() { 
+      sideMenu.classList.add("open"); 
+      menuOverlay.style.display = "block"; 
+  }
+  
+  function closeMenu() { 
+      sideMenu.classList.remove("open"); 
+      menuOverlay.style.display = "none"; 
+  }
+  
+  function showModal(el) { 
+      el.style.display = "block"; 
+  }
+  
+  function hideModal(el) { 
+      el.style.display = "none"; 
+  }
 
-  function copyToClipboard(text){ navigator.clipboard.writeText(text); alert("Wallet Address Copied!"); }
+  function copyToClipboard(text){ 
+      navigator.clipboard.writeText(text); 
+      alert("Wallet Address Copied!"); 
+  }
 
-  // DEMO deposit data
-  const depositData={
-    tron:{address:"DEMO_TRON_ADDRESS",qr:"https://via.placeholder.com/150"},
-    bsc:{address:"DEMO_BSC_ADDRESS",qr:"https://via.placeholder.com/150"}
+  const depositData = {
+    tron: {address: "DEMO_TRON_ADDRESS", qr: "https://via.placeholder.com/150"},
+    bsc: {address: "DEMO_BSC_ADDRESS", qr: "https://via.placeholder.com/150"}
   };
+
   function renderDeposit(){
-    depTronBtn.classList.toggle("active",state.selectedCrypto==="tron");
-    depBscBtn.classList.toggle("active",state.selectedCrypto==="bsc");
-    depQr.src=depositData[state.selectedCrypto].qr;
-    depAddressText.textContent=depositData[state.selectedCrypto].address;
+    depTronBtn.classList.toggle("active", state.selectedCrypto === "tron");
+    depBscBtn.classList.toggle("active", state.selectedCrypto === "bsc");
+    depQr.src = depositData[state.selectedCrypto].qr;
+    depAddressText.textContent = depositData[state.selectedCrypto].address;
   }
 
   function renderWithdrawForm(){
-    const m=state.withdrawMethod;
-    withTronBtn.classList.toggle("active",m==="tron");
-    withBscBtn.classList.toggle("active",m==="bsc");
-    withBankBtn.classList.toggle("active",m==="bank");
+    const m = state.withdrawMethod;
+    withTronBtn.classList.toggle("active", m === "tron");
+    withBscBtn.classList.toggle("active", m === "bsc");
+    withBankBtn.classList.toggle("active", m === "bank");
 
-    if(m!=="bank"){
-      withdrawForm.innerHTML=`
+    if(m !== "bank"){
+      withdrawForm.innerHTML = `
         <div class="input-group"><label>Wallet Address</label><input id="withWallet" type="text" placeholder="Enter your wallet address"></div>
         <div class="input-group"><label>Withdrawal Amount ($)</label><input id="withAmount" type="number" placeholder="Enter amount"></div>
         <div class="min-deposit" style="color:#e50b2e">Minimum withdrawal $10.00</div>
         <button id="withConfirm" class="confirm-btn">Confirm Withdrawal</button>
       `;
     } else {
-      withdrawForm.innerHTML=`
+      withdrawForm.innerHTML = `
         <div class="input-group"><label>Account Number</label><input id="bankAccNo" type="text" placeholder="Enter Account Number"></div>
         <div class="input-group"><label>Account Name</label><input id="bankAccName" type="text" placeholder="Enter Account Name"></div>
         <div class="input-group"><label>Bank Name</label><input id="bankName" type="text" placeholder="Enter Bank Name"></div>
@@ -1461,35 +2691,48 @@ const supabase = window.supabase ? window.supabase.createClient(supabaseUrl, sup
         <button id="withConfirm" class="confirm-btn">Confirm Withdrawal</button>
       `;
     }
-    $("#withConfirm").addEventListener("click",()=>{ alert("Withdrawal request submitted successfully!"); hideModal(withdrawModal); },{once:true});
+    
+    $("#withConfirm").addEventListener("click", () => { 
+        alert("Withdrawal request submitted successfully!"); 
+        hideModal(withdrawModal); 
+    }, {once: true});
   }
 
-  const calMonths=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const daysInMonth=(y,m)=>new Date(y,m+1,0).getDate();
-  const startDay=(y,m)=>new Date(y,m,1).getDay();
+  const calMonths = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  
+  const daysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+  const startDay = (y, m) => new Date(y, m, 1).getDay();
 
   function renderCalendar(){
-    const d=state.calDate, year=d.getFullYear(), month=d.getMonth();
-    const total=daysInMonth(year,month), first=startDay(year,month);
-    const currentYear=new Date().getFullYear();
-    const years=Array.from({length:100},(_,i)=>currentYear-i);
-    let cells=[];
-    for(let i=0;i<first;i++) cells.push(`<div class="cal-day empty"></div>`);
-    for(let day=1;day<=total;day++){
-      const formatted=`${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
-      const sel=state.profileData.dob===formatted?"selected":"";
+    const d = state.calDate;
+    const year = d.getFullYear();
+    const month = d.getMonth();
+    const total = daysInMonth(year, month);
+    const first = startDay(year, month);
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({length: 100}, (_, i) => currentYear - i);
+    
+    let cells = [];
+    for(let i = 0; i < first; i++){
+        cells.push(`<div class="cal-day empty"></div>`);
+    }
+    
+    for(let day = 1; day <= total; day++){
+      const formatted = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+      const sel = state.profileData.dob === formatted ? "selected" : "";
       cells.push(`<div class="cal-day ${sel}" data-date="${formatted}">${day}</div>`);
     }
-    calendarWrap.innerHTML=`
+    
+    calendarWrap.innerHTML = `
       <div class="custom-calendar">
         <div class="cal-header">
           <button id="calPrev" class="cal-nav-btn">&lt;</button>
           <div class="cal-header-controls">
             <select id="calMonth" class="cal-select">
-              ${calMonths.map((m,i)=>`<option value="${i}" ${i===month?"selected":""}>${m}</option>`).join("")}
+              ${calMonths.map((m, i) => `<option value="${i}" ${i === month ? "selected" : ""}>${m}</option>`).join("")}
             </select>
             <select id="calYear" class="cal-select">
-              ${years.map(y=>`<option value="${y}" ${y===year?"selected":""}>${y}</option>`).join("")}
+              ${years.map(y => `<option value="${y}" ${y === year ? "selected" : ""}>${y}</option>`).join("")}
             </select>
           </div>
           <button id="calNext" class="cal-nav-btn">&gt;</button>
@@ -1501,206 +2744,410 @@ const supabase = window.supabase ? window.supabase.createClient(supabaseUrl, sup
         </div>
       </div>
     `;
-    $("#calPrev").onclick=()=>{ state.calDate=new Date(year,month-1,1); renderCalendar(); };
-    $("#calNext").onclick=()=>{ state.calDate=new Date(year,month+1,1); renderCalendar(); };
-    $("#calMonth").onchange=(e)=>{ state.calDate=new Date(year,parseInt(e.target.value,10),1); renderCalendar(); };
-    $("#calYear").onchange=(e)=>{ state.calDate=new Date(parseInt(e.target.value,10),month,1); renderCalendar(); };
-    calendarWrap.querySelectorAll(".cal-day[data-date]").forEach(el=>{
-      el.onclick=()=>{
-        const date=el.getAttribute("data-date");
-        state.profileData.dob=date;
-        pfDob.value=date;
-        state.showCalendar=false;
-        calendarWrap.style.display="none";
+    
+    $("#calPrev").onclick = () => { 
+        state.calDate = new Date(year, month - 1, 1); 
+        renderCalendar(); 
+    };
+    
+    $("#calNext").onclick = () => { 
+        state.calDate = new Date(year, month + 1, 1); 
+        renderCalendar(); 
+    };
+    
+    $("#calMonth").onchange = (e) => { 
+        state.calDate = new Date(year, parseInt(e.target.value, 10), 1); 
+        renderCalendar(); 
+    };
+    
+    $("#calYear").onchange = (e) => { 
+        state.calDate = new Date(parseInt(e.target.value, 10), month, 1); 
+        renderCalendar(); 
+    };
+    
+    calendarWrap.querySelectorAll(".cal-day[data-date]").forEach(el => {
+      el.onclick = () => {
+        const date = el.getAttribute("data-date");
+        state.profileData.dob = date;
+        pfDob.value = date;
+        state.showCalendar = false;
+        calendarWrap.style.display = "none";
       };
     });
   }
 
   function applyProfileLockUI(){
-    const d=state.profileSaved;
-    [pfFirstName,pfLastName,pfDob,pfAddress,pfNic].forEach(i=>i.disabled=d);
-    profileSave.style.display=d?"none":"block";
-    profileLockedText.style.display=d?"block":"none";
+    const d = state.profileSaved;
+    [pfFirstName, pfLastName, pfDob, pfAddress, pfNic].forEach(i => i.disabled = d);
+    profileSave.style.display = d ? "none" : "block";
+    profileLockedText.style.display = d ? "block" : "none";
   }
 
   function sendMessage(){
-    const text=chatInput.value.trim();
+    const text = chatInput.value.trim();
     if(!text) return;
-    const time=new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
-    state.chatMessages.push({type:"text",text,time});
-    chatInput.value="";
+    const time = new Date().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"});
+    state.chatMessages.push({type: "text", text, time});
+    chatInput.value = "";
     renderSupportMessages();
   }
 
   function loadSavedCredentials(){
-    const saved=localStorage.getItem("aviatorAccount");
+    const saved = localStorage.getItem("aviatorAccount");
     if(saved){
-      const acc=JSON.parse(saved);
-      loginIdInput.value=acc.id;
-      loginPwInput.value=acc.pw;
+      const acc = JSON.parse(saved);
+      loginIdInput.value = acc.id;
+      loginPwInput.value = acc.pw;
+      if(acc.currency) {
+          state.currency = acc.currency;
+      }
     }
   }
 
-  function handleRegister(){
-    if(localStorage.getItem("aviatorAccount")){
-      alert("Error: You can only create one account per device! (එක් උපාංගයකින් සෑදිය හැක්කේ එක් ගිණුමක් පමණි)");
-      return;
+  // SUPABASE: Save User to DB when Registering
+  async function handleRegister(){
+    const selectedCurrency = countrySelect.value;
+    const generatedId = Math.floor(10000000 + Math.random() * 90000000).toString();
+    const generatedPw = Math.random().toString(36).slice(-8);
+    
+    const accountData = {
+        id: generatedId, 
+        pw: generatedPw, 
+        currency: selectedCurrency,
+        balance: 3540.0
+    };
+    
+    if (supabaseClient) {
+        const { error } = await supabaseClient.from('players').insert([accountData]);
+        if (error) console.log("Supabase Register Error:", error);
     }
-    const generatedId=Math.floor(10000000+Math.random()*90000000).toString();
-    const generatedPw=Math.random().toString(36).slice(-8);
-    const accountData={id:generatedId,pw:generatedPw};
-    localStorage.setItem("aviatorAccount",JSON.stringify(accountData));
-    newUserIdText.textContent=accountData.id;
-    newPwText.textContent=accountData.pw;
-    state.authScreen="credentials"; renderAuth();
+    
+    localStorage.setItem("aviatorAccount", JSON.stringify(accountData));
+    newUserIdText.textContent = accountData.id;
+    newPwText.textContent = accountData.pw;
+    state.currency = selectedCurrency;
+    state.authScreen = "credentials"; 
+    renderAuth();
   }
 
   function startAppSession(userId){
-    state.isLoggedIn=true;
-    authRoot.style.display="none";
-    gameRoot.style.display="flex";
-    menuUserId.textContent=userId||"Guest";
-    renderBalance(); renderHistory(); renderUserCount(); renderBetsInputs();
+    state.isLoggedIn = true;
+    authRoot.style.display = "none";
+    gameRoot.style.display = "flex";
+    backendConnectingScreen.style.display = "flex";
+    menuUserId.textContent = userId || "Guest";
+
+    $("#lblBetCur").textContent = "Bet " + state.currency;
+    $("#lblWinCur").textContent = "Win " + state.currency;
+    $("#ruleMinBet").textContent = "20.00 " + state.currency;
+    $("#ruleMaxBet").textContent = "50,000.00 " + state.currency;
+    $("#ruleMaxWin").textContent = "500,000.00 " + state.currency;
+
+    renderBalance(); 
+    renderHistory(); 
+    renderUserCount(); 
+    renderBetsInputs();
     resizeCanvas();
-    timeouts.push(setTimeout(()=>startWaitingPhase(),500));
-    document.body.addEventListener("click",ensureMusicStartOnce,{once:true});
-    window.addEventListener("resize",resizeCanvas);
+    
+    state.gamePhase = "initializing";
+    syncMessage.style.display = "block";
+    setupRealtime();
+    document.body.addEventListener("click", ensureMusicStartOnce, {once: true});
+    window.addEventListener("resize", resizeCanvas);
   }
 
-  function handleLogin(){
-    const saved=localStorage.getItem("aviatorAccount");
-    if(!saved){ alert("ගිණුමක් සොයාගත නොහැක. කරුණාකර Register වන්න. (No account found)"); return; }
-    const acc=JSON.parse(saved);
-    if(loginIdInput.value===acc.id && loginPwInput.value===acc.pw) startAppSession(acc.id);
-    else alert("වැරදි User ID හෝ Password එකකි. (Invalid User ID or Password)");
+  // SUPABASE: Check User Details when Logging In
+  async function handleLogin(){
+    const inputId = loginIdInput.value;
+    const inputPw = loginPwInput.value;
+    let acc = null;
+
+    if (supabaseClient) {
+        const { data, error } = await supabaseClient.from('players').select('*').eq('id', inputId).single();
+        if (data && data.pw === inputPw) {
+            acc = data;
+        }
+    }
+
+    if (!acc) {
+        const saved = localStorage.getItem("aviatorAccount");
+        if(saved){
+            const localAcc = JSON.parse(saved);
+            if(localAcc.id === inputId && localAcc.pw === inputPw) acc = localAcc;
+        }
+    }
+
+    if(acc){
+      state.currency = acc.currency || "LKR";
+      if(acc.balance !== undefined) state.balance = acc.balance;
+      startAppSession(acc.id);
+    } else {
+        alert("වැරදි User ID හෝ Password එකකි. (Invalid User ID or Password)");
+    }
   }
 
   function clearAllTimers(){
     clearInterval(gameInterval);
     clearInterval(userInterval);
-    timeouts.forEach(t=>clearTimeout(t));
-    timeouts=[];
+    timeouts.forEach(t => clearTimeout(t));
+    timeouts = [];
+    backendRetryTimer = null;
   }
 
   function logout(){
-    state.isLoggedIn=false;
+    state.isLoggedIn = false;
+    state.gamePhase = "loggedout";
     clearAllTimers();
+    if(realtimeChannel && supabaseClient){
+      supabaseClient.removeChannel(realtimeChannel);
+      realtimeChannel = null;
+    }
     closeMenu();
-    [rulesModal,historyModal,depositModal,withdrawModal,profileModal,supportModal].forEach(hideModal);
+    
+    [rulesModal, historyModal, depositModal, withdrawModal, profileModal, supportModal].forEach(hideModal);
+    
     try{ bgMusic.pause(); }catch{}
-    gameRoot.style.display="none";
-    authRoot.style.display="flex";
-    state.authScreen="login"; renderAuth();
+    
+    gameRoot.style.display = "none";
+    authRoot.style.display = "flex";
+    state.authScreen = "login"; 
+    renderAuth();
     loadSavedCredentials();
   }
 
   function bindEvents(){
-    goRegister.onclick=()=>{state.authScreen="register"; renderAuth();};
-    goLogin.onclick=()=>{state.authScreen="login"; renderAuth();};
-    goToLoginBtn.onclick=()=>{
-      loginIdInput.value=newUserIdText.textContent;
-      loginPwInput.value=newPwText.textContent;
-      state.authScreen="login"; renderAuth();
+    goRegister.onclick = () => { 
+        state.authScreen = "register"; 
+        renderAuth(); 
     };
-    registerBtn.onclick=handleRegister;
-    loginBtn.onclick=handleLogin;
+    
+    goLogin.onclick = () => { 
+        state.authScreen = "login"; 
+        renderAuth(); 
+    };
+    
+    goToLoginBtn.onclick = () => {
+      loginIdInput.value = newUserIdText.textContent;
+      loginPwInput.value = newPwText.textContent;
+      state.authScreen = "login"; 
+      renderAuth();
+    };
+    
+    registerBtn.onclick = handleRegister;
+    loginBtn.onclick = handleLogin;
 
-    menuOpenBtn.onclick=openMenu;
-    menuOverlay.onclick=closeMenu;
-    menuHome.onclick=closeMenu;
+    menuOpenBtn.onclick = openMenu;
+    menuOverlay.onclick = closeMenu;
+    menuHome.onclick = closeMenu;
 
-    musicToggle.onchange=()=>{
-      state.musicOn=musicToggle.checked;
-      if(state.musicOn) ensureMusicStartOnce();
-      else { try{ bgMusic.pause(); }catch{} }
+    musicToggle.onchange = () => {
+      state.musicOn = musicToggle.checked;
+      if(state.musicOn) {
+          ensureMusicStartOnce();
+      } else { 
+          try{ bgMusic.pause(); }catch{} 
+      }
     };
 
-    openRules.onclick=()=>{closeMenu(); showModal(rulesModal);};
-    rulesClose.onclick=()=>hideModal(rulesModal);
+    // HISTORY DROPDOWN TOGGLE
+    historyExpandBtn.onclick = () => {
+        historyExpanded = !historyExpanded;
+        historyDropdown.style.display = historyExpanded ? "flex" : "none";
+    };
 
-    openHistory.onclick=()=>{closeMenu(); renderBetHistoryModal(); showModal(historyModal);};
-    historyClose.onclick=()=>hideModal(historyModal);
+    openRules.onclick = () => { 
+        closeMenu(); 
+        showModal(rulesModal); 
+    };
+    
+    rulesClose.onclick = () => hideModal(rulesModal);
 
-    openDeposit.onclick=()=>{closeMenu(); renderDeposit(); showModal(depositModal);};
-    depositClose.onclick=()=>hideModal(depositModal);
-    depTronBtn.onclick=()=>{state.selectedCrypto="tron"; renderDeposit();};
-    depBscBtn.onclick=()=>{state.selectedCrypto="bsc"; renderDeposit();};
-    depCopyBtn.onclick=()=>copyToClipboard(depAddressText.textContent);
-    depositConfirm.onclick=()=>{alert("Deposit request submitted successfully! Pending verification."); depositAmount.value=""; hideModal(depositModal);};
+    openHistory.onclick = () => { 
+        closeMenu(); 
+        renderBetHistoryModal(); 
+        showModal(historyModal); 
+    };
+    
+    historyClose.onclick = () => hideModal(historyModal);
 
-    openWithdraw.onclick=()=>{closeMenu(); renderWithdrawForm(); showModal(withdrawModal);};
-    withdrawClose.onclick=()=>hideModal(withdrawModal);
-    withTronBtn.onclick=()=>{state.withdrawMethod="tron"; renderWithdrawForm();};
-    withBscBtn.onclick=()=>{state.withdrawMethod="bsc"; renderWithdrawForm();};
-    withBankBtn.onclick=()=>{state.withdrawMethod="bank"; renderWithdrawForm();};
+    openDeposit.onclick = () => { 
+        closeMenu(); 
+        renderDeposit(); 
+        showModal(depositModal); 
+    };
+    
+    depositClose.onclick = () => hideModal(depositModal);
+    
+    depTronBtn.onclick = () => { 
+        state.selectedCrypto = "tron"; 
+        renderDeposit(); 
+    };
+    
+    depBscBtn.onclick = () => { 
+        state.selectedCrypto = "bsc"; 
+        renderDeposit(); 
+    };
+    
+    depCopyBtn.onclick = () => copyToClipboard(depAddressText.textContent);
+    
+    depositConfirm.onclick = () => {
+        alert("Deposit request submitted successfully! Pending verification."); 
+        depositAmount.value = ""; 
+        hideModal(depositModal);
+    };
 
-    openProfile.onclick=()=>{closeMenu(); showModal(profileModal); applyProfileLockUI();};
-    profileClose.onclick=()=>{hideModal(profileModal); state.showCalendar=false; calendarWrap.style.display="none";};
+    openWithdraw.onclick = () => { 
+        closeMenu(); 
+        renderWithdrawForm(); 
+        showModal(withdrawModal); 
+    };
+    
+    withdrawClose.onclick = () => hideModal(withdrawModal);
+    
+    withTronBtn.onclick = () => { 
+        state.withdrawMethod = "tron"; 
+        renderWithdrawForm(); 
+    };
+    
+    withBscBtn.onclick = () => { 
+        state.withdrawMethod = "bsc"; 
+        renderWithdrawForm(); 
+    };
+    
+    withBankBtn.onclick = () => { 
+        state.withdrawMethod = "bank"; 
+        renderWithdrawForm(); 
+    };
 
-    pfDob.onclick=()=>{
+    openProfile.onclick = () => { 
+        closeMenu(); 
+        showModal(profileModal); 
+        applyProfileLockUI(); 
+    };
+    
+    profileClose.onclick = () => {
+        hideModal(profileModal); 
+        state.showCalendar = false; 
+        calendarWrap.style.display = "none";
+    };
+
+    pfDob.onclick = () => {
       if(state.profileSaved) return;
-      state.showCalendar=!state.showCalendar;
-      calendarWrap.style.display=state.showCalendar?"block":"none";
+      state.showCalendar = !state.showCalendar;
+      calendarWrap.style.display = state.showCalendar ? "block" : "none";
       if(state.showCalendar) renderCalendar();
     };
-    profileSave.onclick=()=>{
-      state.profileData.firstName=pfFirstName.value.trim();
-      state.profileData.lastName=pfLastName.value.trim();
-      state.profileData.address=pfAddress.value.trim();
-      state.profileData.nic=pfNic.value.trim();
-      state.profileData.dob=pfDob.value.trim();
-      if(!state.profileData.firstName||!state.profileData.lastName||!state.profileData.dob||!state.profileData.address||!state.profileData.nic){
-        alert("කරුණාකර සියලුම තොරතුරු ඇතුලත් කරන්න! (Please fill all fields)"); return;
+    
+    profileSave.onclick = () => {
+      state.profileData.firstName = pfFirstName.value.trim();
+      state.profileData.lastName = pfLastName.value.trim();
+      state.profileData.address = pfAddress.value.trim();
+      state.profileData.nic = pfNic.value.trim();
+      state.profileData.dob = pfDob.value.trim();
+      
+      if(!state.profileData.firstName || !state.profileData.lastName || !state.profileData.dob || !state.profileData.address || !state.profileData.nic){
+        alert("කරුණාකර සියලුම තොරතුරු ඇතුලත් කරන්න! (Please fill all fields)"); 
+        return;
       }
-      state.profileSaved=true;
+      state.profileSaved = true;
       applyProfileLockUI();
       alert("ඔබගේ තොරතුරු සාර්ථකව සුරැකිණි. දැන් ඒවා වෙනස් කළ නොහැක.");
     };
 
-    openSupport.onclick=()=>{closeMenu(); showModal(supportModal); renderSupportMessages();};
-    supportBack.onclick=()=>hideModal(supportModal);
-    attachBtn.onclick=()=>chatFile.click();
-    chatFile.onchange=(e)=>{
-      const file=e.target.files[0]; if(!file) return;
-      const r=new FileReader();
-      r.onload=(ev)=>{
-        const time=new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
-        state.chatMessages.push({type:"image",imgUrl:ev.target.result,time});
+    openSupport.onclick = () => { 
+        closeMenu(); 
+        showModal(supportModal); 
+        renderSupportMessages(); 
+    };
+    
+    supportBack.onclick = () => hideModal(supportModal);
+    
+    attachBtn.onclick = () => chatFile.click();
+    
+    chatFile.onchange = (e) => {
+      const file = e.target.files[0]; 
+      if(!file) return;
+      
+      const r = new FileReader();
+      r.onload = (ev) => {
+        const time = new Date().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"});
+        state.chatMessages.push({type: "image", imgUrl: ev.target.result, time});
         renderSupportMessages();
       };
       r.readAsDataURL(file);
-      chatFile.value="";
+      chatFile.value = "";
     };
-    sendBtn.onclick=sendMessage;
-    chatInput.onkeydown=(e)=>{ if(e.key==="Enter") sendMessage(); };
+    
+    sendBtn.onclick = sendMessage;
+    
+    chatInput.onkeydown = (e) => { 
+        if(e.key === "Enter") {
+            sendMessage(); 
+        }
+    };
 
-    bet1Minus.onclick=()=>changeBet(1,-10);
-    bet1Plus.onclick=()=>changeBet(1,10);
-    bet2Minus.onclick=()=>changeBet(2,-10);
-    bet2Plus.onclick=()=>changeBet(2,10);
+    bet1Minus.onclick = () => changeBet(1, -10);
+    bet1Plus.onclick = () => changeBet(1, 10);
+    bet2Minus.onclick = () => changeBet(2, -10);
+    bet2Plus.onclick = () => changeBet(2, 10);
 
-    bet1Action.onclick=()=>toggleBetAction(1);
-    bet2Action.onclick=()=>toggleBetAction(2);
+    bet1Action.onclick = () => toggleBetAction(1);
+    bet2Action.onclick = () => toggleBetAction(2);
 
-    document.querySelectorAll(".presetBtn").forEach(btn=>{
-      btn.onclick=()=>presetBet(parseInt(btn.dataset.box,10),parseFloat(btn.dataset.amt));
+    document.querySelectorAll(".presetBtn").forEach(btn => {
+      btn.onclick = () => presetBet(parseInt(btn.dataset.box, 10), parseFloat(btn.dataset.amt));
     });
 
-    logoutBtn.onclick=logout;
+    logoutBtn.onclick = logout;
   }
 
   function init(){
     renderAuth();
     loadSavedCredentials();
-    renderBalance(); renderHistory(); renderUserCount(); renderBetsInputs();
-    multiplierText.style.display="none";
-    waitingScreen.style.display="none";
-    plane.style.display="none";
+    $("#lblBetCur").textContent = "Bet " + state.currency;
+    $("#lblWinCur").textContent = "Win " + state.currency;
+    
+    renderBalance(); 
+    renderHistory(); 
+    renderUserCount(); 
+    renderBetsInputs();
+    
+    multiplierText.style.display = "none";
+    waitingScreen.style.display = "none";
+    plane.style.display = "none";
+    
     bindEvents();
+
+    document.addEventListener("visibilitychange", () => {
+      if(document.hidden){
+        appWasHidden = true;
+      } else if(appWasHidden){
+        appWasHidden = false;
+        resumeGameConnection();
+      }
+    });
+    window.addEventListener("pagehide", () => {
+      if(state.isLoggedIn) appWasHidden = true;
+    });
+    window.addEventListener("pageshow", event => {
+      if((event.persisted || appWasHidden) && state.isLoggedIn){
+        appWasHidden = false;
+        resumeGameConnection();
+      }
+    });
+    window.addEventListener("focus", () => {
+      if(appWasHidden && state.isLoggedIn){
+        appWasHidden = false;
+        resumeGameConnection();
+      }
+    });
+    window.addEventListener("online", () => {
+      if(state.isLoggedIn) resumeGameConnection();
+    });
   }
 
   document.addEventListener("DOMContentLoaded", init);
 })();
 </script>
 </body>
-</html
+</html>
